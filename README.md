@@ -1,6 +1,6 @@
-# sv
+# Cashflow Chronicles
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A modern financial tracking application built with SvelteKit, powered by [`sv`](https://github.com/sveltejs/cli).
 
 ## Creating a project
 
