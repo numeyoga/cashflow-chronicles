@@ -52,3 +52,12 @@ fi
 
 # Verify installation
 elixir --version
+
+# Fetch Elixir dependencies if mix.exs exists
+if [ -f "$CLAUDE_PROJECT_DIR/mix.exs" ]; then
+  echo "Fetching Elixir dependencies..."
+  cd "$CLAUDE_PROJECT_DIR"
+  mix deps.get
+else
+  echo "No mix.exs found, skipping dependency fetch"
+fi
