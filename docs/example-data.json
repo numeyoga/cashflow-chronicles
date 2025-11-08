@@ -1,0 +1,555 @@
+{
+  "version": "1.0.0",
+  "metadata": {
+    "created": "2025-01-01T00:00:00.000Z",
+    "lastModified": "2025-01-15T14:30:00.000Z",
+    "defaultCurrency": "CHF",
+    "owner": "John Doe",
+    "description": "Budget personnel 2025 - Exemple de démonstration"
+  },
+  "currencies": [
+    {
+      "code": "CHF",
+      "name": "Swiss Franc",
+      "symbol": "CHF",
+      "decimalPlaces": 2,
+      "isDefault": true
+    },
+    {
+      "code": "EUR",
+      "name": "Euro",
+      "symbol": "€",
+      "decimalPlaces": 2,
+      "exchangeRates": [
+        {
+          "date": "2025-01-01",
+          "rate": 0.95,
+          "source": "manual"
+        },
+        {
+          "date": "2025-01-15",
+          "rate": 0.94,
+          "source": "manual"
+        }
+      ]
+    },
+    {
+      "code": "USD",
+      "name": "US Dollar",
+      "symbol": "$",
+      "decimalPlaces": 2,
+      "exchangeRates": [
+        {
+          "date": "2025-01-01",
+          "rate": 0.88,
+          "source": "manual"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "id": "acc_001",
+      "name": "Assets:Bank:CHF:PostFinance",
+      "type": "Assets",
+      "currency": "CHF",
+      "opened": "2024-01-01",
+      "closed": null,
+      "description": "Compte bancaire principal PostFinance",
+      "metadata": {
+        "iban": "CH93 0076 2011 6238 5295 7",
+        "institution": "PostFinance"
+      }
+    },
+    {
+      "id": "acc_002",
+      "name": "Assets:Bank:EUR:Revolut",
+      "type": "Assets",
+      "currency": "EUR",
+      "opened": "2024-06-15",
+      "closed": null,
+      "description": "Compte Revolut en euros"
+    },
+    {
+      "id": "acc_003",
+      "name": "Assets:Cash:CHF",
+      "type": "Assets",
+      "currency": "CHF",
+      "opened": "2024-01-01",
+      "closed": null,
+      "description": "Espèces en francs suisses"
+    },
+    {
+      "id": "acc_004",
+      "name": "Liabilities:CreditCard:Visa",
+      "type": "Liabilities",
+      "currency": "CHF",
+      "opened": "2024-01-01",
+      "closed": null,
+      "description": "Carte de crédit Visa"
+    },
+    {
+      "id": "acc_005",
+      "name": "Income:Salary:NetPay",
+      "type": "Income",
+      "currency": "CHF",
+      "opened": "2024-01-01",
+      "closed": null,
+      "description": "Salaire net"
+    },
+    {
+      "id": "acc_006",
+      "name": "Income:Bonus",
+      "type": "Income",
+      "currency": "CHF",
+      "opened": "2024-01-01",
+      "closed": null,
+      "description": "Bonus et primes"
+    },
+    {
+      "id": "acc_007",
+      "name": "Expenses:Food:Groceries",
+      "type": "Expenses",
+      "currency": "CHF",
+      "opened": "2024-01-01",
+      "closed": null,
+      "description": "Courses alimentaires"
+    },
+    {
+      "id": "acc_008",
+      "name": "Expenses:Food:Restaurants",
+      "type": "Expenses",
+      "currency": "CHF",
+      "opened": "2024-01-01",
+      "closed": null,
+      "description": "Restaurants et sorties"
+    },
+    {
+      "id": "acc_009",
+      "name": "Expenses:Housing:Rent",
+      "type": "Expenses",
+      "currency": "CHF",
+      "opened": "2024-01-01",
+      "closed": null,
+      "description": "Loyer mensuel"
+    },
+    {
+      "id": "acc_010",
+      "name": "Expenses:Transport:PublicTransport",
+      "type": "Expenses",
+      "currency": "CHF",
+      "opened": "2024-01-01",
+      "closed": null,
+      "description": "Transports publics"
+    },
+    {
+      "id": "acc_011",
+      "name": "Expenses:Banking:Fees",
+      "type": "Expenses",
+      "currency": "CHF",
+      "opened": "2024-01-01",
+      "closed": null,
+      "description": "Frais bancaires et de change"
+    },
+    {
+      "id": "acc_012",
+      "name": "Equity:OpeningBalances",
+      "type": "Equity",
+      "currency": "CHF",
+      "opened": "2024-01-01",
+      "closed": null,
+      "description": "Soldes d'ouverture"
+    }
+  ],
+  "transactions": [
+    {
+      "id": "txn_001",
+      "date": "2025-01-01",
+      "description": "Solde d'ouverture PostFinance",
+      "payee": null,
+      "tags": ["opening"],
+      "postings": [
+        {
+          "accountId": "acc_001",
+          "amount": 5000.00,
+          "currency": "CHF"
+        },
+        {
+          "accountId": "acc_012",
+          "amount": -5000.00,
+          "currency": "CHF"
+        }
+      ]
+    },
+    {
+      "id": "txn_002",
+      "date": "2025-01-01",
+      "description": "Solde d'ouverture Revolut",
+      "payee": null,
+      "tags": ["opening"],
+      "postings": [
+        {
+          "accountId": "acc_002",
+          "amount": 500.00,
+          "currency": "EUR",
+          "exchangeRate": {
+            "rate": 0.95,
+            "baseCurrency": "CHF",
+            "quoteCurrency": "EUR",
+            "equivalentAmount": 475.00
+          }
+        },
+        {
+          "accountId": "acc_012",
+          "amount": -475.00,
+          "currency": "CHF"
+        }
+      ]
+    },
+    {
+      "id": "txn_003",
+      "date": "2025-01-01",
+      "description": "Solde d'ouverture espèces",
+      "payee": null,
+      "tags": ["opening"],
+      "postings": [
+        {
+          "accountId": "acc_003",
+          "amount": 200.00,
+          "currency": "CHF"
+        },
+        {
+          "accountId": "acc_012",
+          "amount": -200.00,
+          "currency": "CHF"
+        }
+      ]
+    },
+    {
+      "id": "txn_004",
+      "date": "2025-01-02",
+      "description": "Loyer janvier 2025",
+      "payee": "Régie Immobilière SA",
+      "tags": ["rent", "housing"],
+      "postings": [
+        {
+          "accountId": "acc_009",
+          "amount": 1500.00,
+          "currency": "CHF"
+        },
+        {
+          "accountId": "acc_001",
+          "amount": -1500.00,
+          "currency": "CHF"
+        }
+      ]
+    },
+    {
+      "id": "txn_005",
+      "date": "2025-01-05",
+      "description": "Courses au supermarché Migros",
+      "payee": "Migros",
+      "tags": ["groceries", "food"],
+      "postings": [
+        {
+          "accountId": "acc_007",
+          "amount": 120.50,
+          "currency": "CHF"
+        },
+        {
+          "accountId": "acc_001",
+          "amount": -120.50,
+          "currency": "CHF"
+        }
+      ],
+      "metadata": {
+        "location": "Lausanne",
+        "receiptId": "REC_2025_001"
+      }
+    },
+    {
+      "id": "txn_006",
+      "date": "2025-01-08",
+      "description": "Restaurant avec des amis",
+      "payee": "Restaurant Le Petit Lac",
+      "tags": ["restaurant", "social"],
+      "postings": [
+        {
+          "accountId": "acc_008",
+          "amount": 85.00,
+          "currency": "CHF"
+        },
+        {
+          "accountId": "acc_004",
+          "amount": -85.00,
+          "currency": "CHF",
+          "comment": "Payé par carte de crédit"
+        }
+      ]
+    },
+    {
+      "id": "txn_007",
+      "date": "2025-01-10",
+      "description": "Abonnement CFF mensuel",
+      "payee": "CFF",
+      "tags": ["transport", "subscription"],
+      "postings": [
+        {
+          "accountId": "acc_010",
+          "amount": 70.00,
+          "currency": "CHF"
+        },
+        {
+          "accountId": "acc_001",
+          "amount": -70.00,
+          "currency": "CHF"
+        }
+      ]
+    },
+    {
+      "id": "txn_008",
+      "date": "2025-01-12",
+      "description": "Retrait d'espèces",
+      "payee": null,
+      "tags": ["transfer", "cash"],
+      "postings": [
+        {
+          "accountId": "acc_003",
+          "amount": 100.00,
+          "currency": "CHF"
+        },
+        {
+          "accountId": "acc_001",
+          "amount": -100.00,
+          "currency": "CHF"
+        }
+      ]
+    },
+    {
+      "id": "txn_009",
+      "date": "2025-01-15",
+      "description": "Transfert CHF vers EUR pour voyage",
+      "payee": null,
+      "tags": ["transfer", "fx"],
+      "postings": [
+        {
+          "accountId": "acc_002",
+          "amount": 200.00,
+          "currency": "EUR",
+          "exchangeRate": {
+            "rate": 0.94,
+            "baseCurrency": "CHF",
+            "quoteCurrency": "EUR",
+            "equivalentAmount": 188.00
+          }
+        },
+        {
+          "accountId": "acc_001",
+          "amount": -188.00,
+          "currency": "CHF"
+        },
+        {
+          "accountId": "acc_011",
+          "amount": 2.00,
+          "currency": "CHF",
+          "comment": "Frais de change"
+        },
+        {
+          "accountId": "acc_001",
+          "amount": -2.00,
+          "currency": "CHF"
+        }
+      ]
+    },
+    {
+      "id": "txn_010",
+      "date": "2025-01-15",
+      "description": "Courses Coop",
+      "payee": "Coop",
+      "tags": ["groceries", "food"],
+      "postings": [
+        {
+          "accountId": "acc_007",
+          "amount": 95.30,
+          "currency": "CHF"
+        },
+        {
+          "accountId": "acc_003",
+          "amount": -95.30,
+          "currency": "CHF",
+          "comment": "Payé en espèces"
+        }
+      ]
+    },
+    {
+      "id": "txn_011",
+      "date": "2025-01-20",
+      "description": "Remboursement carte de crédit",
+      "payee": null,
+      "tags": ["payment", "credit-card"],
+      "postings": [
+        {
+          "accountId": "acc_004",
+          "amount": 85.00,
+          "currency": "CHF"
+        },
+        {
+          "accountId": "acc_001",
+          "amount": -85.00,
+          "currency": "CHF"
+        }
+      ]
+    },
+    {
+      "id": "txn_012",
+      "date": "2025-01-25",
+      "description": "Salaire janvier 2025",
+      "payee": "Employeur SA",
+      "tags": ["salary", "income"],
+      "postings": [
+        {
+          "accountId": "acc_001",
+          "amount": 5500.00,
+          "currency": "CHF"
+        },
+        {
+          "accountId": "acc_005",
+          "amount": -5000.00,
+          "currency": "CHF",
+          "comment": "Salaire net"
+        },
+        {
+          "accountId": "acc_006",
+          "amount": -500.00,
+          "currency": "CHF",
+          "comment": "Prime de performance"
+        }
+      ]
+    }
+  ],
+  "budgets": [
+    {
+      "id": "bud_001",
+      "name": "Alimentation mensuelle",
+      "accountPattern": "Expenses:Food:*",
+      "period": "monthly",
+      "amount": 600.00,
+      "currency": "CHF",
+      "startDate": "2025-01-01",
+      "endDate": null,
+      "alerts": {
+        "warningThreshold": 0.80,
+        "criticalThreshold": 0.95
+      }
+    },
+    {
+      "id": "bud_002",
+      "name": "Transport mensuel",
+      "accountPattern": "Expenses:Transport:*",
+      "period": "monthly",
+      "amount": 150.00,
+      "currency": "CHF",
+      "startDate": "2025-01-01",
+      "endDate": null,
+      "alerts": {
+        "warningThreshold": 0.80,
+        "criticalThreshold": 0.95
+      }
+    },
+    {
+      "id": "bud_003",
+      "name": "Logement annuel",
+      "accountPattern": "Expenses:Housing:*",
+      "period": "yearly",
+      "amount": 18000.00,
+      "currency": "CHF",
+      "startDate": "2025-01-01",
+      "endDate": "2025-12-31"
+    }
+  ],
+  "recurringTransactions": [
+    {
+      "id": "rec_001",
+      "name": "Salaire mensuel",
+      "frequency": "monthly",
+      "dayOfMonth": 25,
+      "startDate": "2025-01-25",
+      "endDate": null,
+      "enabled": true,
+      "template": {
+        "description": "Salaire {{monthName}} {{year}}",
+        "payee": "Employeur SA",
+        "tags": ["salary", "income"],
+        "postings": [
+          {
+            "accountId": "acc_001",
+            "amount": 5500.00,
+            "currency": "CHF"
+          },
+          {
+            "accountId": "acc_005",
+            "amount": -5000.00,
+            "currency": "CHF"
+          },
+          {
+            "accountId": "acc_006",
+            "amount": -500.00,
+            "currency": "CHF"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rec_002",
+      "name": "Loyer mensuel",
+      "frequency": "monthly",
+      "dayOfMonth": 2,
+      "startDate": "2025-01-02",
+      "endDate": null,
+      "enabled": true,
+      "template": {
+        "description": "Loyer {{monthName}} {{year}}",
+        "payee": "Régie Immobilière SA",
+        "tags": ["rent", "housing"],
+        "postings": [
+          {
+            "accountId": "acc_009",
+            "amount": 1500.00,
+            "currency": "CHF"
+          },
+          {
+            "accountId": "acc_001",
+            "amount": -1500.00,
+            "currency": "CHF"
+          }
+        ]
+      }
+    },
+    {
+      "id": "rec_003",
+      "name": "Abonnement CFF",
+      "frequency": "monthly",
+      "dayOfMonth": 10,
+      "startDate": "2025-01-10",
+      "endDate": null,
+      "enabled": true,
+      "template": {
+        "description": "Abonnement CFF {{monthName}}",
+        "payee": "CFF",
+        "tags": ["transport", "subscription"],
+        "postings": [
+          {
+            "accountId": "acc_010",
+            "amount": 70.00,
+            "currency": "CHF"
+          },
+          {
+            "accountId": "acc_001",
+            "amount": -70.00,
+            "currency": "CHF"
+          }
+        ]
+      }
+    }
+  ]
+}
