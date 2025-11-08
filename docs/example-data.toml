@@ -1,0 +1,540 @@
+# Cashflow Chronicles - Fichier de données exemple
+# Ce fichier démontre toutes les fonctionnalités du format TOML
+
+version = "1.0.0"
+
+[metadata]
+created = "2025-01-01T00:00:00Z"
+lastModified = "2025-01-15T14:30:00Z"
+defaultCurrency = "CHF"
+owner = "John Doe"
+description = "Budget personnel 2025 - Exemple de démonstration"
+
+# ============================================================================
+# DEVISES
+# ============================================================================
+
+# Franc suisse (devise par défaut)
+[[currency]]
+code = "CHF"
+name = "Swiss Franc"
+symbol = "CHF"
+decimalPlaces = 2
+isDefault = true
+
+# Euro avec historique de taux de change
+[[currency]]
+code = "EUR"
+name = "Euro"
+symbol = "€"
+decimalPlaces = 2
+
+  [[currency.exchangeRate]]
+  date = "2025-01-01"
+  rate = 0.95
+  source = "manual"
+
+  [[currency.exchangeRate]]
+  date = "2025-01-15"
+  rate = 0.94
+  source = "manual"
+
+# Dollar américain
+[[currency]]
+code = "USD"
+name = "US Dollar"
+symbol = "$"
+decimalPlaces = 2
+
+  [[currency.exchangeRate]]
+  date = "2025-01-01"
+  rate = 0.88
+  source = "manual"
+
+# ============================================================================
+# COMPTES
+# ============================================================================
+
+# --- Actifs (Assets) ---
+
+[[account]]
+id = "acc_001"
+name = "Assets:Bank:CHF:PostFinance"
+type = "Assets"
+currency = "CHF"
+opened = "2024-01-01"
+description = "Compte bancaire principal PostFinance"
+
+  [account.metadata]
+  iban = "CH93 0076 2011 6238 5295 7"
+  institution = "PostFinance"
+
+[[account]]
+id = "acc_002"
+name = "Assets:Bank:EUR:Revolut"
+type = "Assets"
+currency = "EUR"
+opened = "2024-06-15"
+description = "Compte Revolut en euros"
+
+[[account]]
+id = "acc_003"
+name = "Assets:Cash:CHF"
+type = "Assets"
+currency = "CHF"
+opened = "2024-01-01"
+description = "Espèces en francs suisses"
+
+# --- Passifs (Liabilities) ---
+
+[[account]]
+id = "acc_004"
+name = "Liabilities:CreditCard:Visa"
+type = "Liabilities"
+currency = "CHF"
+opened = "2024-01-01"
+description = "Carte de crédit Visa"
+
+# --- Revenus (Income) ---
+
+[[account]]
+id = "acc_005"
+name = "Income:Salary:NetPay"
+type = "Income"
+currency = "CHF"
+opened = "2024-01-01"
+description = "Salaire net"
+
+[[account]]
+id = "acc_006"
+name = "Income:Bonus"
+type = "Income"
+currency = "CHF"
+opened = "2024-01-01"
+description = "Bonus et primes"
+
+# --- Dépenses (Expenses) ---
+
+[[account]]
+id = "acc_007"
+name = "Expenses:Food:Groceries"
+type = "Expenses"
+currency = "CHF"
+opened = "2024-01-01"
+description = "Courses alimentaires"
+
+[[account]]
+id = "acc_008"
+name = "Expenses:Food:Restaurants"
+type = "Expenses"
+currency = "CHF"
+opened = "2024-01-01"
+description = "Restaurants et sorties"
+
+[[account]]
+id = "acc_009"
+name = "Expenses:Housing:Rent"
+type = "Expenses"
+currency = "CHF"
+opened = "2024-01-01"
+description = "Loyer mensuel"
+
+[[account]]
+id = "acc_010"
+name = "Expenses:Transport:PublicTransport"
+type = "Expenses"
+currency = "CHF"
+opened = "2024-01-01"
+description = "Transports publics"
+
+[[account]]
+id = "acc_011"
+name = "Expenses:Banking:Fees"
+type = "Expenses"
+currency = "CHF"
+opened = "2024-01-01"
+description = "Frais bancaires et de change"
+
+# --- Capitaux propres (Equity) ---
+
+[[account]]
+id = "acc_012"
+name = "Equity:OpeningBalances"
+type = "Equity"
+currency = "CHF"
+opened = "2024-01-01"
+description = "Soldes d'ouverture"
+
+# ============================================================================
+# TRANSACTIONS
+# ============================================================================
+
+# --- Soldes d'ouverture ---
+
+[[transaction]]
+id = "txn_001"
+date = "2025-01-01"
+description = "Solde d'ouverture PostFinance"
+tags = ["opening"]
+
+  [[transaction.posting]]
+  accountId = "acc_001"
+  amount = 5000.00
+  currency = "CHF"
+
+  [[transaction.posting]]
+  accountId = "acc_012"
+  amount = -5000.00
+  currency = "CHF"
+
+[[transaction]]
+id = "txn_002"
+date = "2025-01-01"
+description = "Solde d'ouverture Revolut"
+tags = ["opening"]
+
+  [[transaction.posting]]
+  accountId = "acc_002"
+  amount = 500.00
+  currency = "EUR"
+
+    [transaction.posting.exchangeRate]
+    rate = 0.95
+    baseCurrency = "CHF"
+    quoteCurrency = "EUR"
+    equivalentAmount = 475.00
+
+  [[transaction.posting]]
+  accountId = "acc_012"
+  amount = -475.00
+  currency = "CHF"
+
+[[transaction]]
+id = "txn_003"
+date = "2025-01-01"
+description = "Solde d'ouverture espèces"
+tags = ["opening"]
+
+  [[transaction.posting]]
+  accountId = "acc_003"
+  amount = 200.00
+  currency = "CHF"
+
+  [[transaction.posting]]
+  accountId = "acc_012"
+  amount = -200.00
+  currency = "CHF"
+
+# --- Dépenses courantes ---
+
+[[transaction]]
+id = "txn_004"
+date = "2025-01-02"
+description = "Loyer janvier 2025"
+payee = "Régie Immobilière SA"
+tags = ["rent", "housing"]
+
+  [[transaction.posting]]
+  accountId = "acc_009"
+  amount = 1500.00
+  currency = "CHF"
+
+  [[transaction.posting]]
+  accountId = "acc_001"
+  amount = -1500.00
+  currency = "CHF"
+
+[[transaction]]
+id = "txn_005"
+date = "2025-01-05"
+description = "Courses au supermarché Migros"
+payee = "Migros"
+tags = ["groceries", "food"]
+
+  [[transaction.posting]]
+  accountId = "acc_007"
+  amount = 120.50
+  currency = "CHF"
+
+  [[transaction.posting]]
+  accountId = "acc_001"
+  amount = -120.50
+  currency = "CHF"
+
+  [transaction.metadata]
+  location = "Lausanne"
+  receiptId = "REC_2025_001"
+
+[[transaction]]
+id = "txn_006"
+date = "2025-01-08"
+description = "Restaurant avec des amis"
+payee = "Restaurant Le Petit Lac"
+tags = ["restaurant", "social"]
+
+  [[transaction.posting]]
+  accountId = "acc_008"
+  amount = 85.00
+  currency = "CHF"
+
+  [[transaction.posting]]
+  accountId = "acc_004"
+  amount = -85.00
+  currency = "CHF"
+  comment = "Payé par carte de crédit"
+
+[[transaction]]
+id = "txn_007"
+date = "2025-01-10"
+description = "Abonnement CFF mensuel"
+payee = "CFF"
+tags = ["transport", "subscription"]
+
+  [[transaction.posting]]
+  accountId = "acc_010"
+  amount = 70.00
+  currency = "CHF"
+
+  [[transaction.posting]]
+  accountId = "acc_001"
+  amount = -70.00
+  currency = "CHF"
+
+# --- Transferts ---
+
+[[transaction]]
+id = "txn_008"
+date = "2025-01-12"
+description = "Retrait d'espèces"
+tags = ["transfer", "cash"]
+
+  [[transaction.posting]]
+  accountId = "acc_003"
+  amount = 100.00
+  currency = "CHF"
+
+  [[transaction.posting]]
+  accountId = "acc_001"
+  amount = -100.00
+  currency = "CHF"
+
+# --- Conversion multi-devises ---
+
+[[transaction]]
+id = "txn_009"
+date = "2025-01-15"
+description = "Transfert CHF vers EUR pour voyage"
+tags = ["transfer", "fx"]
+
+  # Crédit du compte EUR
+  [[transaction.posting]]
+  accountId = "acc_002"
+  amount = 200.00
+  currency = "EUR"
+
+    [transaction.posting.exchangeRate]
+    rate = 0.94
+    baseCurrency = "CHF"
+    quoteCurrency = "EUR"
+    equivalentAmount = 188.00
+
+  # Débit du compte CHF
+  [[transaction.posting]]
+  accountId = "acc_001"
+  amount = -188.00
+  currency = "CHF"
+
+  # Frais de change
+  [[transaction.posting]]
+  accountId = "acc_011"
+  amount = 2.00
+  currency = "CHF"
+  comment = "Frais de change"
+
+  [[transaction.posting]]
+  accountId = "acc_001"
+  amount = -2.00
+  currency = "CHF"
+
+[[transaction]]
+id = "txn_010"
+date = "2025-01-15"
+description = "Courses Coop"
+payee = "Coop"
+tags = ["groceries", "food"]
+
+  [[transaction.posting]]
+  accountId = "acc_007"
+  amount = 95.30
+  currency = "CHF"
+
+  [[transaction.posting]]
+  accountId = "acc_003"
+  amount = -95.30
+  currency = "CHF"
+  comment = "Payé en espèces"
+
+# --- Remboursement carte de crédit ---
+
+[[transaction]]
+id = "txn_011"
+date = "2025-01-20"
+description = "Remboursement carte de crédit"
+tags = ["payment", "credit-card"]
+
+  [[transaction.posting]]
+  accountId = "acc_004"
+  amount = 85.00
+  currency = "CHF"
+
+  [[transaction.posting]]
+  accountId = "acc_001"
+  amount = -85.00
+  currency = "CHF"
+
+# --- Revenus ---
+
+[[transaction]]
+id = "txn_012"
+date = "2025-01-25"
+description = "Salaire janvier 2025"
+payee = "Employeur SA"
+tags = ["salary", "income"]
+
+  [[transaction.posting]]
+  accountId = "acc_001"
+  amount = 5500.00
+  currency = "CHF"
+
+  [[transaction.posting]]
+  accountId = "acc_005"
+  amount = -5000.00
+  currency = "CHF"
+  comment = "Salaire net"
+
+  [[transaction.posting]]
+  accountId = "acc_006"
+  amount = -500.00
+  currency = "CHF"
+  comment = "Prime de performance"
+
+# ============================================================================
+# BUDGETS
+# ============================================================================
+
+[[budget]]
+id = "bud_001"
+name = "Alimentation mensuelle"
+accountPattern = "Expenses:Food:*"
+period = "monthly"
+amount = 600.00
+currency = "CHF"
+startDate = "2025-01-01"
+
+  [budget.alerts]
+  warningThreshold = 0.80
+  criticalThreshold = 0.95
+
+[[budget]]
+id = "bud_002"
+name = "Transport mensuel"
+accountPattern = "Expenses:Transport:*"
+period = "monthly"
+amount = 150.00
+currency = "CHF"
+startDate = "2025-01-01"
+
+  [budget.alerts]
+  warningThreshold = 0.80
+  criticalThreshold = 0.95
+
+[[budget]]
+id = "bud_003"
+name = "Logement annuel"
+accountPattern = "Expenses:Housing:*"
+period = "yearly"
+amount = 18000.00
+currency = "CHF"
+startDate = "2025-01-01"
+endDate = "2025-12-31"
+
+# ============================================================================
+# TRANSACTIONS RÉCURRENTES
+# ============================================================================
+
+# Salaire mensuel (le 25 de chaque mois)
+[[recurring]]
+id = "rec_001"
+name = "Salaire mensuel"
+frequency = "monthly"
+dayOfMonth = 25
+startDate = "2025-01-25"
+enabled = true
+
+  [recurring.template]
+  description = "Salaire {{monthName}} {{year}}"
+  payee = "Employeur SA"
+  tags = ["salary", "income"]
+
+    [[recurring.template.posting]]
+    accountId = "acc_001"
+    amount = 5500.00
+    currency = "CHF"
+
+    [[recurring.template.posting]]
+    accountId = "acc_005"
+    amount = -5000.00
+    currency = "CHF"
+
+    [[recurring.template.posting]]
+    accountId = "acc_006"
+    amount = -500.00
+    currency = "CHF"
+
+# Loyer mensuel (le 1er de chaque mois)
+[[recurring]]
+id = "rec_002"
+name = "Loyer mensuel"
+frequency = "monthly"
+dayOfMonth = 1
+startDate = "2025-01-01"
+enabled = true
+
+  [recurring.template]
+  description = "Loyer {{monthName}} {{year}}"
+  payee = "Régie Immobilière SA"
+  tags = ["rent", "housing"]
+
+    [[recurring.template.posting]]
+    accountId = "acc_009"
+    amount = 1500.00
+    currency = "CHF"
+
+    [[recurring.template.posting]]
+    accountId = "acc_001"
+    amount = -1500.00
+    currency = "CHF"
+
+# Abonnement CFF mensuel (le 10 de chaque mois)
+[[recurring]]
+id = "rec_003"
+name = "Abonnement CFF"
+frequency = "monthly"
+dayOfMonth = 10
+startDate = "2025-01-10"
+enabled = true
+
+  [recurring.template]
+  description = "Abonnement CFF {{monthName}}"
+  payee = "CFF"
+  tags = ["transport", "subscription"]
+
+    [[recurring.template.posting]]
+    accountId = "acc_010"
+    amount = 70.00
+    currency = "CHF"
+
+    [[recurring.template.posting]]
+    accountId = "acc_001"
+    amount = -70.00
+    currency = "CHF"
