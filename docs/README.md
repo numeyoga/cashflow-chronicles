@@ -16,7 +16,22 @@ Document principal décrivant:
 
 **À lire en premier** pour comprendre le projet dans son ensemble.
 
-### 2. [Format de fichier TOML](./TOML-FORMAT.md)
+### 2. [Epics - Planification Agile](./EPICS.md)
+
+Plan de développement complet avec 22 Epics couvrant 100% des fonctionnalités:
+- Organisation par phase (MVP, Phase 2, Phase 3, Phase 4)
+- Priorisation et estimation de complexité
+- User stories et critères d'acceptation
+- Dépendances entre Epics
+- Roadmap de développement
+
+**Indispensable** pour les chefs de projet, product owners et développeurs.
+
+**Formats disponibles:**
+- [EPICS.md](./EPICS.md) - Version markdown lisible
+- [EPICS.toml](./EPICS.toml) - Version TOML structurée
+
+### 3. [Format de fichier TOML](./TOML-FORMAT.md)
 
 Spécification technique détaillée du format de données:
 - Structure générale du fichier TOML
@@ -28,7 +43,7 @@ Spécification technique détaillée du format de données:
 
 **Indispensable** pour implémenter le stockage des données.
 
-### 3. [Règles de validation](./VALIDATION-RULES.md)
+### 4. [Règles de validation](./VALIDATION-RULES.md)
 
 Documentation complète de toutes les règles de validation:
 - Validation structurelle (format TOML, types)
@@ -40,7 +55,7 @@ Documentation complète de toutes les règles de validation:
 
 **Essentiel** pour garantir l'intégrité des données.
 
-### 4. [Fichier d'exemple](./example-data.toml)
+### 5. [Fichier d'exemple](./example-data.toml)
 
 Fichier TOML d'exemple complet démontrant:
 - Toutes les sections et leur structure
@@ -97,9 +112,10 @@ Chaque transaction doit être équilibrée dans chaque devise.
 ### Pour un Product Owner / Chef de projet
 
 1. Lire la [Spécification Fonctionnelle](./SPECIFICATION.md) complète
-2. Parcourir les exemples dans [Format TOML](./TOML-FORMAT.md)
-3. Consulter le [fichier d'exemple](./example-data.toml) pour visualiser les données
-4. Comprendre les contraintes dans [Règles de validation](./VALIDATION-RULES.md)
+2. **Étudier les [Epics](./EPICS.md) pour la planification et la roadmap**
+3. Parcourir les exemples dans [Format TOML](./TOML-FORMAT.md)
+4. Consulter le [fichier d'exemple](./example-data.toml) pour visualiser les données
+5. Comprendre les contraintes dans [Règles de validation](./VALIDATION-RULES.md)
 
 ### Pour un Développeur Frontend
 
