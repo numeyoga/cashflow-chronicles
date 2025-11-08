@@ -16,21 +16,22 @@ Document principal décrivant:
 
 **À lire en premier** pour comprendre le projet dans son ensemble.
 
-### 2. [Format de fichier JSON](./JSON-FORMAT.md)
+### 2. [Format de fichier TOML](./TOML-FORMAT.md)
 
 Spécification technique détaillée du format de données:
-- Structure générale du fichier JSON
+- Structure générale du fichier TOML
 - Format de chaque entité (devises, comptes, transactions, budgets, récurrences)
 - Propriétés obligatoires et optionnelles
 - Exemples concrets pour chaque type d'entité
 - Règles de nommage et conventions
+- Avantages de TOML pour Plain Text Accounting
 
 **Indispensable** pour implémenter le stockage des données.
 
 ### 3. [Règles de validation](./VALIDATION-RULES.md)
 
 Documentation complète de toutes les règles de validation:
-- Validation structurelle (format, types)
+- Validation structurelle (format TOML, types)
 - Validation métier (règles comptables)
 - Validation d'intégrité (cohérence globale)
 - Codes de règles (V-XXX-YYY) avec sévérité (Erreur/Avertissement/Info)
@@ -39,15 +40,16 @@ Documentation complète de toutes les règles de validation:
 
 **Essentiel** pour garantir l'intégrité des données.
 
-### 4. [JSON Schema](./cashflow-schema.json)
+### 4. [Fichier d'exemple](./example-data.toml)
 
-Schéma JSON Schema pour validation automatique:
-- Définition formelle du format de fichier
-- Validation de structure et de types
-- Contraintes sur les valeurs (patterns, min/max, etc.)
-- Utilisable avec des bibliothèques de validation JSON Schema
+Fichier TOML d'exemple complet démontrant:
+- Toutes les sections et leur structure
+- Transactions simples et multi-devises
+- Budgets et transactions récurrentes
+- Commentaires et annotations
+- Bonnes pratiques de formatage
 
-**Outil technique** pour valider automatiquement les fichiers.
+**Référence pratique** pour commencer rapidement.
 
 ## 🎯 Concepts clés
 
@@ -55,9 +57,18 @@ Schéma JSON Schema pour validation automatique:
 
 L'application s'inspire des outils de Plain Text Accounting (Beancount, Ledger, hledger) qui utilisent:
 - **Comptabilité en partie double** : Chaque transaction affecte au moins 2 comptes
-- **Fichiers texte** : Données lisibles et versionables (ici en JSON)
+- **Fichiers texte** : Données lisibles et versionables (ici en TOML)
 - **Validation stricte** : Équilibre des transactions et cohérence garantie
 - **Multi-devises** : Support natif de plusieurs devises avec taux de change
+
+### Pourquoi TOML ?
+
+TOML (Tom's Obvious Minimal Language) est le format idéal pour ce projet:
+- **Lisibilité supérieure** : Syntaxe claire et minimale, parfaite pour l'édition manuelle
+- **Commentaires natifs** : Annoter vos données financières directement dans le fichier
+- **Structure claire** : Sections bien délimitées, faciles à naviguer
+- **Git-friendly** : Format texte optimisé pour le versionning
+- **Adoption croissante** : Utilisé par Rust, Hugo, et de nombreux projets modernes
 
 ### Types de comptes
 
@@ -86,28 +97,29 @@ Chaque transaction doit être équilibrée dans chaque devise.
 ### Pour un Product Owner / Chef de projet
 
 1. Lire la [Spécification Fonctionnelle](./SPECIFICATION.md) complète
-2. Parcourir les exemples dans [Format JSON](./JSON-FORMAT.md)
-3. Comprendre les contraintes dans [Règles de validation](./VALIDATION-RULES.md)
+2. Parcourir les exemples dans [Format TOML](./TOML-FORMAT.md)
+3. Consulter le [fichier d'exemple](./example-data.toml) pour visualiser les données
+4. Comprendre les contraintes dans [Règles de validation](./VALIDATION-RULES.md)
 
 ### Pour un Développeur Frontend
 
 1. Comprendre les concepts dans [Spécification Fonctionnelle](./SPECIFICATION.md) (sections 2-3)
-2. Étudier le [Format JSON](./JSON-FORMAT.md) pour l'intégration
+2. Étudier le [Format TOML](./TOML-FORMAT.md) pour l'intégration
 3. Référencer les [Règles de validation](./VALIDATION-RULES.md) pour l'UX
-4. Utiliser le [JSON Schema](./cashflow-schema.json) pour la validation
+4. Consulter le [fichier d'exemple](./example-data.toml) pour des cas concrets
 
 ### Pour un Développeur Backend / Data
 
-1. Maîtriser le [Format JSON](./JSON-FORMAT.md) dans son intégralité
+1. Maîtriser le [Format TOML](./TOML-FORMAT.md) dans son intégralité
 2. Implémenter toutes les [Règles de validation](./VALIDATION-RULES.md)
-3. Utiliser le [JSON Schema](./cashflow-schema.json) comme base
+3. Choisir un parser TOML approprié (voir TOML-FORMAT.md section 9.2)
 4. Référencer la [Spécification Fonctionnelle](./SPECIFICATION.md) pour la logique métier
 
 ### Pour un QA / Testeur
 
 1. Comprendre les fonctionnalités dans [Spécification Fonctionnelle](./SPECIFICATION.md)
 2. Créer des cas de test à partir des [Règles de validation](./VALIDATION-RULES.md)
-3. Utiliser les exemples du [Format JSON](./JSON-FORMAT.md) comme données de test
+3. Utiliser le [fichier d'exemple](./example-data.toml) et créer des variations
 
 ## 🔗 Références externes
 
@@ -123,16 +135,17 @@ Chaque transaction doit être équilibrée dans chaque devise.
 
 ### Standards
 - [ISO 4217 Currency Codes](https://www.iso.org/iso-4217-currency-codes.html)
-- [JSON Schema](https://json-schema.org/)
+- [TOML Specification v1.0.0](https://toml.io/en/v1.0.0)
 
 ## 📋 Liste de contrôle d'implémentation
 
 ### Phase 1 : MVP (Minimum Viable Product)
 
-- [ ] Stockage et chargement du fichier JSON
+- [ ] Parser TOML et chargement du fichier
 - [ ] Gestion des comptes (CRUD)
 - [ ] Gestion des transactions simples (une devise)
 - [ ] Validation de base (équilibre, types)
+- [ ] Sauvegarde en TOML
 - [ ] Dashboard avec soldes
 - [ ] Liste des transactions avec filtres
 

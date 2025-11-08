@@ -13,24 +13,27 @@ Une application moderne de gestion de budget personnel multi-devises, construite
 - 📊 **Budgets et rapports** : Suivi de vos dépenses et génération de rapports détaillés
 - 🔄 **Transactions récurrentes** : Automatisation des opérations répétitives
 - 📱 **Interface moderne** : Application web responsive construite avec SvelteKit
-- 💾 **Données locales** : Vos données financières restent sur votre machine (fichier JSON)
+- 💾 **Données locales** : Vos données financières restent sur votre machine (fichier TOML)
+- 📝 **Format lisible** : TOML avec support des commentaires pour annoter vos finances
 
 ### Inspiré par Plain Text Accounting
 
 L'application s'inspire des meilleurs outils de Plain Text Accounting (Beancount, Ledger, hledger) :
 - Comptabilité rigoureuse et vérifiable
-- Format de données simple et lisible (JSON)
+- Format de données simple et lisible (TOML)
+- Support des commentaires pour annoter vos finances
 - Validation stricte de l'intégrité des données
 - Traçabilité complète de toutes les opérations
+- Format Git-friendly pour versioner votre budget
 
 ## 📚 Documentation
 
 La documentation complète du projet se trouve dans le dossier [`docs/`](./docs/):
 
 - **[Spécification fonctionnelle](./docs/SPECIFICATION.md)** : Vue d'ensemble, concepts et fonctionnalités
-- **[Format de fichier JSON](./docs/JSON-FORMAT.md)** : Structure détaillée des données
+- **[Format de fichier TOML](./docs/TOML-FORMAT.md)** : Structure détaillée des données
 - **[Règles de validation](./docs/VALIDATION-RULES.md)** : Contrôles d'intégrité et validation
-- **[JSON Schema](./docs/cashflow-schema.json)** : Schéma pour validation automatique
+- **[Fichier d'exemple](./docs/example-data.toml)** : Exemple complet avec commentaires
 
 👉 **Commencez par lire le [README de la documentation](./docs/README.md)**
 
@@ -78,10 +81,10 @@ npm run preview
 **Phase actuelle : Planification et spécification** ✅
 
 - [x] Spécification fonctionnelle complète
-- [x] Format de fichier JSON défini
-- [x] Règles de validation documentées
-- [x] JSON Schema créé
-- [ ] Implémentation du stockage de données
+- [x] Format de fichier TOML défini
+- [x] Règles de validation documentées (150+ règles)
+- [x] Fichier d'exemple avec cas concrets
+- [ ] Parser TOML et stockage de données
 - [ ] Interface utilisateur
 - [ ] Validation et tests
 - [ ] Support multi-devises complet
@@ -89,8 +92,8 @@ npm run preview
 ## 🛠️ Stack technique
 
 - **Frontend** : SvelteKit, TypeScript
-- **Stockage** : Fichier JSON local
-- **Validation** : JSON Schema
+- **Format de données** : TOML v1.0.0
+- **Stockage** : Fichier TOML local
 - **Tests** : Vitest (unit), Playwright (e2e)
 - **Code quality** : ESLint, Prettier
 
@@ -110,10 +113,20 @@ npm run preview
 
 Chaque transaction affecte au moins deux comptes. Par exemple :
 
-```
-Achat de courses (120.50 CHF) :
-  + Expenses:Food:Groceries     120.50 CHF (débit)
-  - Assets:Bank:PostFinance    -120.50 CHF (crédit)
+```toml
+[[transaction]]
+description = "Achat de courses"
+date = "2025-01-15"
+
+  [[transaction.posting]]
+  accountId = "acc_expenses_food"
+  amount = 120.50
+  currency = "CHF"
+
+  [[transaction.posting]]
+  accountId = "acc_bank_postfinance"
+  amount = -120.50
+  currency = "CHF"
 ```
 
 **Règle d'or** : La somme des montants doit toujours être 0.
@@ -122,10 +135,23 @@ Achat de courses (120.50 CHF) :
 
 Les transferts entre devises sont gérés avec des taux de change :
 
-```
-Transfert CHF → EUR :
-  + Assets:Bank:EUR:Revolut      100.00 EUR @ 0.95 CHF/EUR
-  - Assets:Bank:CHF:PostFinance  -95.00 CHF
+```toml
+[[transaction]]
+description = "Transfert CHF → EUR"
+
+  [[transaction.posting]]
+  accountId = "acc_bank_revolut_eur"
+  amount = 100.00
+  currency = "EUR"
+
+    [transaction.posting.exchangeRate]
+    rate = 0.95
+    equivalentAmount = 95.00
+
+  [[transaction.posting]]
+  accountId = "acc_bank_postfinance"
+  amount = -95.00
+  currency = "CHF"
 ```
 
 ## 🤝 Contribuer
@@ -146,5 +172,6 @@ MIT
 
 - [Plain Text Accounting](https://plaintextaccounting.org)
 - [Beancount](https://beancount.github.io/)
+- [TOML Specification](https://toml.io/en/v1.0.0)
 - [SvelteKit Documentation](https://kit.svelte.dev/)
 - [Double-entry bookkeeping](https://en.wikipedia.org/wiki/Double-entry_bookkeeping)

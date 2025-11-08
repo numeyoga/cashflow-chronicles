@@ -175,7 +175,7 @@ Définition de budgets par catégorie de dépenses:
 - Détection des doublons
 
 #### Export
-- Export en JSON (format natif)
+- Export en TOML (format natif)
 - Export en CSV pour analyse externe
 - Export en format Beancount/Ledger (optionnel)
 
@@ -230,19 +230,28 @@ Définition de budgets par catégorie de dépenses:
 ### 5.1 Stack technique
 
 - **Frontend**: SvelteKit
-- **Stockage**: Fichier JSON local
+- **Stockage**: Fichier TOML local
 - **Déploiement**: Application web statique
 
 ### 5.2 Format de données
 
-- Toutes les données sont stockées dans un fichier JSON
-- Structure versionnable et lisible
+- Toutes les données sont stockées dans un fichier TOML
+- Format texte lisible et éditable manuellement
+- Support des commentaires pour annotations
+- Structure versionnable (compatible Git)
 - Validation stricte du schéma
 - Sauvegardes automatiques
 
+**Pourquoi TOML ?**
+- Plus lisible que JSON pour l'édition manuelle
+- Support natif des commentaires
+- Syntaxe minimale et claire
+- Parfaitement aligné avec l'esprit Plain Text Accounting
+- Format utilisé par de nombreux outils modernes (Rust, Hugo, etc.)
+
 ### 5.3 Performance
 
-- Chargement rapide du fichier JSON (< 1s pour 10 000 transactions)
+- Chargement rapide du fichier TOML (< 1s pour 10 000 transactions)
 - Calculs de soldes optimisés
 - Mise en cache des agrégations
 
@@ -265,7 +274,7 @@ Définition de budgets par catégorie de dépenses:
 
 - Données stockées localement uniquement
 - Pas d'envoi vers des serveurs externes
-- Chiffrement optionnel du fichier JSON
+- Chiffrement optionnel du fichier TOML
 
 ## 7. Évolutions futures
 

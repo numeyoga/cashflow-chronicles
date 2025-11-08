@@ -5,27 +5,29 @@
 Ce document décrit toutes les règles de validation et contrôles d'intégrité qui doivent être implémentés dans **Cashflow Chronicles** pour garantir la cohérence et l'exactitude des données financières.
 
 Les validations sont organisées en plusieurs niveaux:
-1. **Validation structurelle** : Format et types de données
+1. **Validation structurelle** : Format TOML et types de données
 2. **Validation métier** : Règles comptables et financières
 3. **Validation d'intégrité** : Cohérence globale du fichier
 
-## 2. Validation du fichier JSON
+## 2. Validation du fichier TOML
 
 ### 2.1 Structure générale
 
 | Règle | Description | Sévérité |
 |-------|-------------|----------|
-| **V-FILE-001** | Le fichier doit être un JSON valide | Erreur |
+| **V-FILE-001** | Le fichier doit être un TOML valide (spec v1.0.0) | Erreur |
 | **V-FILE-002** | L'encodage doit être UTF-8 | Erreur |
 | **V-FILE-003** | La propriété `version` doit être présente | Erreur |
 | **V-FILE-004** | La version doit suivre le format semver (X.Y.Z) | Erreur |
-| **V-FILE-005** | Toutes les propriétés racine requises doivent être présentes | Erreur |
+| **V-FILE-005** | Toutes les sections requises doivent être présentes | Erreur |
 
-### 2.2 Propriétés racine requises
+### 2.2 Sections requises
 
 ```
-version, metadata, currencies, accounts, transactions, budgets, recurringTransactions
+version, metadata, currency, account, transaction, budget, recurring
 ```
+
+Note: En TOML, `currency`, `account`, etc. sont des arrays de tables déclarés avec `[[section]]`
 
 ## 3. Validation des métadonnées
 
@@ -143,46 +145,55 @@ Assets:Bank:CHF (type: Assets)
 #### Exemples d'équilibre
 
 **Transaction simple (une devise):**
-```json
-{
-  "postings": [
-    { "accountId": "acc_001", "amount": 100, "currency": "CHF" },
-    { "accountId": "acc_002", "amount": -100, "currency": "CHF" }
-  ]
-}
+```toml
+[[transaction.posting]]
+accountId = "acc_001"
+amount = 100.00
+currency = "CHF"
+
+[[transaction.posting]]
+accountId = "acc_002"
+amount = -100.00
+currency = "CHF"
 ```
 ✓ CHF: 100 + (-100) = 0
 
 **Transaction multi-comptes (une devise):**
-```json
-{
-  "postings": [
-    { "accountId": "acc_001", "amount": 5500, "currency": "CHF" },
-    { "accountId": "acc_002", "amount": -5000, "currency": "CHF" },
-    { "accountId": "acc_003", "amount": -500, "currency": "CHF" }
-  ]
-}
+```toml
+[[transaction.posting]]
+accountId = "acc_001"
+amount = 5500.00
+currency = "CHF"
+
+[[transaction.posting]]
+accountId = "acc_002"
+amount = -5000.00
+currency = "CHF"
+
+[[transaction.posting]]
+accountId = "acc_003"
+amount = -500.00
+currency = "CHF"
 ```
 ✓ CHF: 5500 + (-5000) + (-500) = 0
 
 **Transaction avec conversion:**
-```json
-{
-  "postings": [
-    {
-      "accountId": "acc_eur",
-      "amount": 100,
-      "currency": "EUR",
-      "exchangeRate": {
-        "rate": 0.95,
-        "baseCurrency": "CHF",
-        "quoteCurrency": "EUR",
-        "equivalentAmount": 95
-      }
-    },
-    { "accountId": "acc_chf", "amount": -95, "currency": "CHF" }
-  ]
-}
+```toml
+[[transaction.posting]]
+accountId = "acc_eur"
+amount = 100.00
+currency = "EUR"
+
+  [transaction.posting.exchangeRate]
+  rate = 0.95
+  baseCurrency = "CHF"
+  quoteCurrency = "EUR"
+  equivalentAmount = 95.00
+
+[[transaction.posting]]
+accountId = "acc_chf"
+amount = -95.00
+currency = "CHF"
 ```
 ✓ EUR: 100 = 100
 ✓ CHF: -95 = -95 (équivalent de 100 EUR @ 0.95)
@@ -381,18 +392,18 @@ Chaque règle de validation doit avoir:
 
 ### 13.2 Fichiers de test
 
-Créer des fichiers JSON de test:
-- `valid-minimal.json` : Fichier minimal valide
-- `valid-complete.json` : Fichier complet avec tous les types d'entités
-- `valid-multicurrency.json` : Cas multi-devises complexe
-- `invalid-*.json` : Fichiers violant des règles spécifiques
+Créer des fichiers TOML de test:
+- `valid-minimal.toml` : Fichier minimal valide
+- `valid-complete.toml` : Fichier complet avec tous les types d'entités
+- `valid-multicurrency.toml` : Cas multi-devises complexe
+- `invalid-*.toml` : Fichiers violant des règles spécifiques
 
 ## 14. Performance de validation
 
 ### 14.1 Objectifs de performance
 
-- Validation d'un fichier de 1000 transactions : < 100ms
-- Validation d'un fichier de 10000 transactions : < 1s
+- Parsing et validation d'un fichier de 1000 transactions : < 100ms
+- Parsing et validation d'un fichier de 10000 transactions : < 1s
 - Validation incrémentale d'une transaction : < 10ms
 
 ### 14.2 Optimisations
