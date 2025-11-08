@@ -31,7 +31,21 @@ Plan de développement complet avec 22 Epics couvrant 100% des fonctionnalités:
 - [EPICS.md](./EPICS.md) - Version markdown lisible
 - [EPICS.toml](./EPICS.toml) - Version TOML structurée
 
-### 3. [Format de fichier TOML](./TOML-FORMAT.md)
+### 3. [Architecture Logicielle](./ARCHITECTURE.md)
+
+Documentation complète de l'architecture de l'application:
+- Architecture en couches (Clean Architecture / Hexagonal)
+- Modèles de données et entités du domaine
+- Patterns et principes de conception (SOLID, Repository, Use Cases)
+- Flux de données (lecture/écriture/validation)
+- Stratégies de performance et cache
+- Structure des modules et packages
+- Gestion de l'état avec Svelte Stores
+- Décisions architecturales (ADRs)
+
+**Essentiel** pour les architectes, développeurs et tech leads.
+
+### 4. [Format de fichier TOML](./TOML-FORMAT.md)
 
 Spécification technique détaillée du format de données:
 - Structure générale du fichier TOML
@@ -43,7 +57,7 @@ Spécification technique détaillée du format de données:
 
 **Indispensable** pour implémenter le stockage des données.
 
-### 4. [Règles de validation](./VALIDATION-RULES.md)
+### 5. [Règles de validation](./VALIDATION-RULES.md)
 
 Documentation complète de toutes les règles de validation:
 - Validation structurelle (format TOML, types)
@@ -55,7 +69,7 @@ Documentation complète de toutes les règles de validation:
 
 **Essentiel** pour garantir l'intégrité des données.
 
-### 5. [Fichier d'exemple](./example-data.toml)
+### 6. [Fichier d'exemple](./example-data.toml)
 
 Fichier TOML d'exemple complet démontrant:
 - Toutes les sections et leur structure
@@ -120,16 +134,29 @@ Chaque transaction doit être équilibrée dans chaque devise.
 ### Pour un Développeur Frontend
 
 1. Comprendre les concepts dans [Spécification Fonctionnelle](./SPECIFICATION.md) (sections 2-3)
-2. Étudier le [Format TOML](./TOML-FORMAT.md) pour l'intégration
-3. Référencer les [Règles de validation](./VALIDATION-RULES.md) pour l'UX
-4. Consulter le [fichier d'exemple](./example-data.toml) pour des cas concrets
+2. **Étudier l'[Architecture](./ARCHITECTURE.md) (sections 2.1, 7, 4.1) pour la structure des composants**
+3. Comprendre les [Epics](./EPICS.md) pour prioriser le développement
+4. Étudier le [Format TOML](./TOML-FORMAT.md) pour l'intégration
+5. Référencer les [Règles de validation](./VALIDATION-RULES.md) pour l'UX
+6. Consulter le [fichier d'exemple](./example-data.toml) pour des cas concrets
 
 ### Pour un Développeur Backend / Data
 
-1. Maîtriser le [Format TOML](./TOML-FORMAT.md) dans son intégralité
-2. Implémenter toutes les [Règles de validation](./VALIDATION-RULES.md)
-3. Choisir un parser TOML approprié (voir TOML-FORMAT.md section 9.2)
-4. Référencer la [Spécification Fonctionnelle](./SPECIFICATION.md) pour la logique métier
+1. **Maîtriser l'[Architecture](./ARCHITECTURE.md) complète (couches, patterns, flux)**
+2. Comprendre les [Epics](./EPICS.md) pour la roadmap d'implémentation
+3. Implémenter le modèle de domaine (voir ARCHITECTURE.md section 3)
+4. Maîtriser le [Format TOML](./TOML-FORMAT.md) dans son intégralité
+5. Implémenter toutes les [Règles de validation](./VALIDATION-RULES.md)
+6. Choisir un parser TOML approprié (voir TOML-FORMAT.md section 9.2)
+7. Référencer la [Spécification Fonctionnelle](./SPECIFICATION.md) pour la logique métier
+
+### Pour un Architecte / Tech Lead
+
+1. **Lire l'[Architecture](./ARCHITECTURE.md) en priorité**
+2. Examiner les [Epics](./EPICS.md) pour la planification
+3. Valider les [Règles de validation](./VALIDATION-RULES.md) (150+ règles)
+4. Comprendre la [Spécification Fonctionnelle](./SPECIFICATION.md)
+5. Analyser les décisions architecturales (ADRs dans ARCHITECTURE.md section 12)
 
 ### Pour un QA / Testeur
 
