@@ -135,7 +135,7 @@ Implémentation des **150+ règles de validation** pour garantir l'intégrité d
 - Vérification équation comptable
 
 **Critères d'acceptation:**
-- 150+ règles implémentées
+- 102 règles de validation implémentées
 - Validation au chargement < 100ms (1000 tx)
 - Validation incrémentale < 10ms
 - Erreurs bloquent la sauvegarde
