@@ -153,22 +153,26 @@ Assets = Liabilities + Equity + (Income - Expenses)
 
 Tableau de bord principal avec vue d'ensemble de la situation financière.
 
-**Widgets:**
+**Widgets MVP:**
 - Soldes totaux par devise
 - Valeur nette
 - Graphique d'évolution
 - Transactions récentes
-- Alertes de budget
 - Répartition des dépenses
+
+**Widgets Phase 3** (nécessitent EPIC-007 Budgets):
+- Alertes de budget *(sera ajouté en Phase 3)*
 
 **User Stories:**
 - Voir ma situation financière en un coup d'œil
 - Voir mes soldes par devise
 - Voir l'évolution de ma valeur nette
 - Voir mes dernières transactions
-- Être alerté des dépassements de budget
+- Voir la répartition de mes dépenses par catégorie
 
 **Performance:** Dashboard charge en < 2s
+
+**Note:** Les alertes de budget seront ajoutées au Dashboard lors de l'implémentation de EPIC-007 (Phase 3).
 
 ---
 
