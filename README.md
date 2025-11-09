@@ -82,7 +82,7 @@ npm run preview
 
 - [x] Spécification fonctionnelle complète
 - [x] Format de fichier TOML défini
-- [x] Règles de validation documentées (150+ règles)
+- [x] Règles de validation documentées (102 règles)
 - [x] Fichier d'exemple avec cas concrets
 - [ ] Parser TOML et stockage de données
 - [ ] Interface utilisateur

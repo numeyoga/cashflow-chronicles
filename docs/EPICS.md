@@ -124,7 +124,7 @@ Transactions mono-devise en partie double avec équilibre obligatoire (Σ = 0).
 ### EPIC-006 : Système de Validation et Règles d'Intégrité
 **Priorité:** Critique | **Complexité:** Très Haute
 
-Implémentation des **150+ règles de validation** pour garantir l'intégrité des données.
+Implémentation des **102 règles de validation** pour garantir l'intégrité des données.
 
 **Objectifs clés:**
 - Toutes les règles V-XXX-YYY
@@ -493,7 +493,7 @@ Stratégie de tests complète.
 - Unitaires (Vitest)
 - Intégration
 - E2E (Playwright)
-- Validation (150+ règles)
+- Validation (102 règles)
 
 **Objectifs:**
 - Couverture > 80%
@@ -511,7 +511,7 @@ Ces 22 Epics couvrent **100% des fonctionnalités** documentées:
 ✅ Gestion multi-devises
 ✅ Gestion des comptes hiérarchiques
 ✅ Transactions simples et multi-devises
-✅ Validation et intégrité (150+ règles)
+✅ Validation et intégrité (102 règles)
 ✅ Budgets et suivi
 ✅ Transactions récurrentes
 ✅ Dashboard et rapports
@@ -602,7 +602,7 @@ EPIC-001 (TOML)
 ### Qualité
 - Couverture de tests > 80%
 - 0 erreur de validation non gérée
-- 150+ règles de validation implémentées
+- 102 règles de validation implémentées
 
 ### Performance
 - Chargement < 1s pour 10 000 transactions
