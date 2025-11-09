@@ -647,7 +647,7 @@ Le fichier doit respecter la spécification TOML v1.0.0:
 
 ### 9.2 Parsers recommandés (2025)
 
-**JavaScript/TypeScript** (recommandé pour ce projet) :
+**JavaScript** (recommandé pour ce projet) :
 - **`smol-toml`** ⭐ (Recommandé) - Moderne, léger, maintenu activement
   - NPM: `npm install smol-toml`
   - Taille: ~6KB minified

@@ -91,7 +91,7 @@ npm run preview
 
 ## 🛠️ Stack technique
 
-- **Frontend** : SvelteKit, TypeScript
+- **Frontend** : SvelteKit, JavaScript
 - **Format de données** : TOML v1.0.0
 - **Stockage** : Fichier TOML local
 - **Tests** : Vitest (unit), Playwright (e2e)
