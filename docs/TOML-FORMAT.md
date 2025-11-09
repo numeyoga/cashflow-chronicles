@@ -273,21 +273,25 @@ tags = ["transfer", "fx"]
   amount = 100.00
   currency = "EUR"
 
+    # Taux de change pour la conversion
     [transaction.posting.exchangeRate]
-    rate = 0.95
-    baseCurrency = "CHF"
-    quoteCurrency = "EUR"
-    equivalentAmount = 95.00
+    # IMPORTANT: Ce taux exprime la conversion EUR → CHF
+    # Formule: equivalentAmount (CHF) = amount (EUR) × rate
+    # Exemple: 95.00 CHF = 100.00 EUR × 0.95
+    rate = 0.95                    # 1 EUR = 0.95 CHF (taux du marché)
+    baseCurrency = "CHF"           # Devise de référence du système
+    quoteCurrency = "EUR"          # Devise de la transaction
+    equivalentAmount = 95.00       # Montant équivalent en CHF
 
-  # Débit du compte CHF
+  # Débit du compte CHF (équivalent de 100 EUR)
   [[transaction.posting]]
   accountId = "acc_001"
   amount = -95.00
   currency = "CHF"
 
-  # Frais de change
+  # Frais de change (optionnel)
   [[transaction.posting]]
-  accountId = "acc_007"
+  accountId = "acc_007"  # Compte Expenses:Banking:FXFees
   amount = 0.50
   currency = "CHF"
   comment = "Frais de change"
@@ -297,6 +301,10 @@ tags = ["transfer", "fx"]
   amount = -0.50
   currency = "CHF"
 ```
+
+**Vérification de l'équilibre** :
+- EUR: 100.00 = 100.00 ✓
+- CHF: -95.00 + 0.50 - 0.50 = -95.00 (équivalent de 100 EUR @ 0.95) ✓
 
 ### Transaction d'ouverture
 
@@ -460,7 +468,7 @@ enabled = true
 id = "rec_003"
 name = "Cours de yoga"
 frequency = "weekly"
-dayOfWeek = 3  # Mercredi (0 = Lundi)
+dayOfWeek = 3  # Mercredi (ISO 8601: 1=Lundi, 2=Mardi, 3=Mercredi, ..., 7=Dimanche)
 startDate = "2025-01-08"
 endDate = "2025-06-30"
 enabled = true
@@ -480,6 +488,10 @@ enabled = true
     amount = -25.00
     currency = "CHF"
 ```
+
+**IMPORTANT - Convention dayOfWeek** : Ce système utilise ISO 8601
+- 1 = Lundi, 2 = Mardi, 3 = Mercredi, 4 = Jeudi, 5 = Vendredi, 6 = Samedi, 7 = Dimanche
+- ⚠️ **Différent de JavaScript** (0=Dimanche) et Python (0=Lundi)
 
 ### Propriétés de transaction récurrente
 
@@ -633,12 +645,27 @@ enabled = true
 Le fichier doit respecter la spécification TOML v1.0.0:
 - [Spécification TOML](https://toml.io/en/v1.0.0)
 
-### 9.2 Parsers recommandés
+### 9.2 Parsers recommandés (2025)
 
-- **JavaScript/TypeScript** : `@iarna/toml`, `smol-toml`
-- **Python** : `tomli` (lecture), `tomli-w` (écriture)
-- **Rust** : `toml` crate
-- **Go** : `github.com/BurntSushi/toml`
+**JavaScript/TypeScript** (recommandé pour ce projet) :
+- **`smol-toml`** ⭐ (Recommandé) - Moderne, léger, maintenu activement
+  - NPM: `npm install smol-toml`
+  - Taille: ~6KB minified
+  - Supporte TOML v1.0.0
+
+- **`@ltd/j-toml`** (Alternative solide)
+  - NPM: `npm install @ltd/j-toml`
+  - Feature-complete, bien maintenu
+  - Supporte TOML v1.0.0
+
+- ~~`@iarna/toml`~~ ❌ **DÉPRÉCIÉ** - Archivé depuis 2020, ne plus utiliser
+
+**Autres langages** :
+- **Python** : `tomli` (lecture), `tomli-w` (écriture) - Standard depuis Python 3.11
+- **Rust** : `toml` crate (officiel)
+- **Go** : `github.com/BurntSushi/toml` (officiel)
+
+**Note importante** : Toujours vérifier que le parser supporte la **spécification TOML v1.0.0** complète.
 
 ### 9.3 Validation du schéma
 

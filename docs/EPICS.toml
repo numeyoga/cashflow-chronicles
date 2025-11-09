@@ -443,6 +443,8 @@ phase = "MVP"
 description = """
 Créer le tableau de bord principal affichant une vue d'ensemble de la situation
 financière avec soldes, graphiques et transactions récentes.
+
+NOTE: Les alertes de budget seront ajoutées en Phase 3 (EPIC-007).
 """
 
 objectives = [
@@ -452,7 +454,7 @@ objectives = [
   "Créer les widgets de synthèse",
   "Afficher les transactions récentes",
   "Créer des graphiques d'évolution",
-  "Afficher les alertes de budget"
+  "Afficher la répartition des dépenses"
 ]
 
 acceptanceCriteria = [
@@ -461,7 +463,7 @@ acceptanceCriteria = [
   "La valeur nette est calculée correctement",
   "Les graphiques sont interactifs",
   "Les 10 dernières transactions sont affichées",
-  "Les alertes de budget sont visibles",
+  "La répartition des dépenses est affichée",
   "Le dashboard est responsive"
 ]
 
@@ -470,21 +472,26 @@ userStories = [
   "En tant qu'utilisateur, je veux voir mes soldes par devise",
   "En tant qu'utilisateur, je veux voir l'évolution de ma valeur nette",
   "En tant qu'utilisateur, je veux voir mes dernières transactions",
-  "En tant qu'utilisateur, je veux être alerté si je dépasse un budget",
+  "En tant qu'utilisateur, je veux voir la répartition de mes dépenses",
   "En tant qu'utilisateur, je veux des graphiques clairs et visuels"
 ]
 
-dependencies = ["EPIC-001", "EPIC-002", "EPIC-003", "EPIC-004", "EPIC-007"]
+# CORRECTION: Retrait de EPIC-007 (Budgets) des dépendances car il est en Phase 3
+# Les alertes de budget seront ajoutées au Dashboard lors de l'implémentation de EPIC-007
+dependencies = ["EPIC-001", "EPIC-002", "EPIC-003", "EPIC-004"]
 estimatedComplexity = "Haute"
 
   [epic.components]
-  widgets = [
+  widgetsMVP = [
     "Soldes totaux par devise",
     "Valeur nette",
     "Graphique d'évolution",
     "Transactions récentes",
-    "Alertes de budget",
     "Répartition des dépenses"
+  ]
+
+  widgetsPhase3 = [
+    "Alertes de budget (ajouté avec EPIC-007)"
   ]
 
 # =============================================================================

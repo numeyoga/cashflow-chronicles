@@ -153,11 +153,17 @@ class Transaction {
   id: TransactionId
   date: Date
   description: string
-  postings: Posting[]
+  postings: Posting[]       // IMPORTANT: Tableau en TypeScript
   // ... méthodes métier
   isBalanced(): boolean
 }
 ```
+
+**⚠️ Note importante - Conventions de nommage TypeScript vs TOML** :
+- **TypeScript** : Utilise le pluriel pour les tableaux (ex: `postings: Posting[]`, `exchangeRates: ExchangeRateHistory[]`)
+- **TOML** : Utilise le singulier pour les array of tables (ex: `[[transaction.posting]]`, `[[currency.exchangeRate]]`)
+- Cette différence est normale et due aux conventions de chaque format.
+- Les enums TypeScript utilisent PascalCase, les valeurs TOML correspondantes sont en lowercase (ex: `Daily = 'daily'`)
 
 #### Value Objects
 ```typescript
@@ -1635,20 +1641,23 @@ class BankImportPlugin implements Plugin {
 - ✅ Support SSR/SSG/SPA
 - ⚠️ Écosystème moins mature que React
 
-### ADR-004: Validation à 150+ règles
+### ADR-004: Système de validation complet (102 règles)
 
 **Status**: Accepted
 
 **Context**: Intégrité des données financières critique
 
-**Decision**: Implémenter toutes les règles de validation documentées
+**Decision**: Implémenter toutes les 102 règles de validation documentées
 
 **Consequences**:
 - ✅ Garantie d'intégrité maximale
 - ✅ Détection précoce des erreurs
-- ✅ Messages d'erreur clairs
-- ⚠️ Complexité de l'implémentation
-- ⚠️ Impact performance (optimisation nécessaire)
+- ✅ Messages d'erreur clairs (codes V-XXX-YYY)
+- ✅ Conformité standards (ISO 8601, ISO 4217)
+- ⚠️ Complexité de l'implémentation (16 catégories de règles)
+- ⚠️ Impact performance (optimisation nécessaire avec caching)
+
+**Détail** : Voir VALIDATION-RULES.md pour le détail complet des 102 règles
 
 ### ADR-005: Cache multi-niveaux
 

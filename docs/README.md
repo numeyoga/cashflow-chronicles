@@ -121,12 +121,36 @@ Pour chaque transaction : **Σ Débits = Σ Crédits**
 
 Chaque transaction doit être équilibrée dans chaque devise.
 
+## 🚀 Roadmap v1.0
+
+Le développement est organisé en 4 phases principales :
+
+- **MVP - Phase 1** (6-8 mois) : Fondations et fonctionnalités essentielles
+  - Stockage TOML, comptes, transactions simples, validation (102 règles)
+  - 9 Epics critiques (EPIC-001 à 006, 009, 012, 013, 017, 021)
+
+- **Phase 2 - Multi-devises** (2-3 mois) : Support complet des devises
+  - Taux de change, conversions, transactions multi-devises
+  - 2 Epics (EPIC-005, 014)
+
+- **Phase 3 - Budgets et Rapports** (3-4 mois) : Planification et analyse
+  - Budgets, récurrences, rapports financiers, dashboard avancé
+  - 5 Epics (EPIC-007, 008, 010, 015, 016)
+
+- **Phase 4 - Fonctionnalités Avancées** (3-4 mois) : Optimisation et outils experts
+  - Import/Export, recherche, réconciliation, performance
+  - 5 Epics (EPIC-011, 018, 019, 020, 022)
+
+**Total** : 22 Epics, 102 règles de validation, 14-19 mois (équipe 2-3 développeurs)
+
+Voir [EPICS.md](./EPICS.md) pour le détail complet de la planification.
+
 ## 📖 Comment utiliser cette documentation
 
 ### Pour un Product Owner / Chef de projet
 
 1. Lire la [Spécification Fonctionnelle](./SPECIFICATION.md) complète
-2. **Étudier les [Epics](./EPICS.md) pour la planification et la roadmap**
+2. **Étudier les [Epics](./EPICS.md) pour la planification et la roadmap** (22 Epics, 102 règles de validation)
 3. Parcourir les exemples dans [Format TOML](./TOML-FORMAT.md)
 4. Consulter le [fichier d'exemple](./example-data.toml) pour visualiser les données
 5. Comprendre les contraintes dans [Règles de validation](./VALIDATION-RULES.md)
@@ -154,7 +178,7 @@ Chaque transaction doit être équilibrée dans chaque devise.
 
 1. **Lire l'[Architecture](./ARCHITECTURE.md) en priorité**
 2. Examiner les [Epics](./EPICS.md) pour la planification
-3. Valider les [Règles de validation](./VALIDATION-RULES.md) (150+ règles)
+3. Valider les [Règles de validation](./VALIDATION-RULES.md) (102 règles de validation)
 4. Comprendre la [Spécification Fonctionnelle](./SPECIFICATION.md)
 5. Analyser les décisions architecturales (ADRs dans ARCHITECTURE.md section 12)
 

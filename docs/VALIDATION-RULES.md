@@ -4,10 +4,18 @@
 
 Ce document décrit toutes les règles de validation et contrôles d'intégrité qui doivent être implémentés dans **Cashflow Chronicles** pour garantir la cohérence et l'exactitude des données financières.
 
+**Total de règles documentées** : 102 règles de validation
+
 Les validations sont organisées en plusieurs niveaux:
 1. **Validation structurelle** : Format TOML et types de données
 2. **Validation métier** : Règles comptables et financières
 3. **Validation d'intégrité** : Cohérence globale du fichier
+
+### Standards utilisés
+- **ISO 8601** : Format de dates et timestamps
+- **ISO 4217** : Codes de devises (3 lettres, ex: CHF, EUR, USD)
+- **TOML v1.0.0** : Spécification du format de fichier
+- **Semantic Versioning** : Versionning du schéma (semver.org)
 
 ## 2. Validation du fichier TOML
 
@@ -128,9 +136,14 @@ Assets:Bank:CHF (type: Assets)
 | **V-POST-001** | `accountId` doit référencer un compte existant | Erreur |
 | **V-POST-002** | `amount` ne peut pas être 0 | Erreur |
 | **V-POST-003** | `currency` doit correspondre à la devise du compte | Erreur |
-| **V-POST-004** | Le compte référencé ne doit pas être fermé à la date de la transaction | Erreur |
-| **V-POST-005** | La date de transaction doit être >= date d'ouverture du compte | Erreur |
-| **V-POST-006** | La précision décimale doit respecter `decimalPlaces` de la devise | Avertissement |
+| **V-POST-004** | La date de transaction doit être >= date d'ouverture du compte | Erreur |
+| **V-POST-005** | La date de transaction doit être <= date de fermeture du compte (si fermé) | Erreur |
+| **V-POST-006** | Le compte ne doit pas être utilisé dans des transactions futures après sa fermeture | Erreur |
+| **V-POST-007** | La précision décimale doit respecter `decimalPlaces` de la devise (arrondi automatique recommandé) | Erreur |
+
+**Note V-POST-004/005/006** : Ces règles garantissent qu'un compte ne peut avoir de transactions qu'entre ses dates d'ouverture et de fermeture. Une transaction à la date exacte de fermeture est permise (transaction de clôture).
+
+**Note V-POST-007** : Les montants avec une précision excessive (ex: 100.999 CHF alors que CHF a 2 décimales) doivent être arrondis. L'implémentation devrait arrondir automatiquement lors de la saisie ou afficher une erreur claire.
 
 ### 6.3 Équilibre de la transaction (Règle d'or)
 
@@ -179,34 +192,47 @@ currency = "CHF"
 
 **Transaction avec conversion:**
 ```toml
+# Exemple: Transfert de 100 EUR → CHF
+# Taux: 1 EUR = 0.95 CHF (standard marché)
+
 [[transaction.posting]]
 accountId = "acc_eur"
 amount = 100.00
 currency = "EUR"
 
   [transaction.posting.exchangeRate]
-  rate = 0.95
-  baseCurrency = "CHF"
-  quoteCurrency = "EUR"
-  equivalentAmount = 95.00
+  # IMPORTANT: Ce taux représente la conversion EUR → CHF
+  # Formule: equivalentAmount (CHF) = amount (EUR) × rate
+  # Calcul:  95.00 CHF = 100.00 EUR × 0.95
+  rate = 0.95                  # Taux de conversion: 1 EUR = 0.95 CHF
+  baseCurrency = "CHF"         # Devise de référence du système (devise par défaut)
+  quoteCurrency = "EUR"        # Devise de la transaction (devise du posting)
+  equivalentAmount = 95.00     # Montant équivalent en CHF
 
 [[transaction.posting]]
 accountId = "acc_chf"
 amount = -95.00
 currency = "CHF"
 ```
-✓ EUR: 100 = 100
-✓ CHF: -95 = -95 (équivalent de 100 EUR @ 0.95)
+✓ EUR: 100 = 100 (balance en EUR)
+✓ CHF: -95 = -95 (balance en CHF, équivalent de 100 EUR @ 0.95)
 
 ### 6.4 Validation des taux de change
 
 | Règle | Description | Sévérité |
 |-------|-------------|----------|
 | **V-FX-001** | `rate` doit être > 0 | Erreur |
-| **V-FX-002** | `baseCurrency` doit être la devise par défaut | Erreur |
-| **V-FX-003** | `quoteCurrency` doit être la devise du posting | Erreur |
+| **V-FX-002** | `baseCurrency` doit être la devise par défaut du système (metadata.defaultCurrency) | Erreur |
+| **V-FX-003** | `quoteCurrency` doit être la devise du posting (transaction.posting.currency) | Erreur |
 | **V-FX-004** | `equivalentAmount` = `amount` × `rate` (tolérance ±0.01) | Erreur |
-| **V-FX-005** | Si taux défini dans `currencies`, il doit être cohérent | Avertissement |
+| **V-FX-005** | Si taux défini dans `currencies`, il doit être cohérent (écart < 5%) | Avertissement |
+| **V-FX-006** | La formule doit toujours être: baseCurrency_amount = quoteCurrency_amount × rate | Erreur |
+
+**Note sur la notation FX** :
+- **Convention marché** : EUR/CHF = 0.95 signifie "1 EUR = 0.95 CHF"
+- **Dans ce système** : `rate = 0.95` avec `quoteCurrency = EUR` et `baseCurrency = CHF` signifie la même chose
+- **Formule de conversion** : `Montant_en_CHF = Montant_en_EUR × rate`
+- **Attention** : Ne pas confondre avec la notation inversée CHF/EUR = 1.0526 (1 CHF = 1.0526 EUR)
 
 ### 6.5 Logique métier
 
@@ -235,12 +261,30 @@ currency = "CHF"
 | **V-BUD-011** | Les seuils doivent être entre 0 et 1 | Erreur |
 | **V-BUD-012** | `warningThreshold` < `criticalThreshold` | Erreur |
 
-### Patterns de comptes valides
+### Patterns de comptes valides (Pattern Matching)
 
-- `Expenses:Food:*` : Tous les sous-comptes de Food
-- `Expenses:*` : Tous les comptes de dépenses
-- `Expenses:Transport:Public:*` : Sous-comptes spécifiques
-- `Assets:Bank:CHF:PostFinance` : Compte exact
+Le caractère `*` (wildcard) matche **un ou plusieurs segments** de la hiérarchie de comptes.
+
+**Exemples** :
+- `Expenses:Food:*` → Matche tous les sous-comptes de Food de manière récursive
+  - ✓ `Expenses:Food:Groceries`
+  - ✓ `Expenses:Food:Restaurants:FastFood`
+  - ✗ `Expenses:Food` (exact match uniquement si pas de `*`)
+
+- `Expenses:*` → Matche tous les comptes de dépenses (récursif)
+  - ✓ `Expenses:Food`
+  - ✓ `Expenses:Transport:Public`
+
+- `Expenses:Transport:Public:*` → Sous-comptes spécifiques
+  - ✓ `Expenses:Transport:Public:Bus`
+  - ✗ `Expenses:Transport:Private:Car`
+
+- `Assets:Bank:CHF:PostFinance` → Compte exact (pas de wildcard)
+  - ✓ `Assets:Bank:CHF:PostFinance` seulement
+
+**Limitations** :
+- Wildcards multiples non supportés (ex: `*:Food:*` invalide)
+- Le wildcard doit être le dernier segment (ex: `Expenses:*:Groceries` invalide)
 
 ## 8. Validation des transactions récurrentes
 
@@ -251,13 +295,29 @@ currency = "CHF"
 | **V-REC-003** | `name` ne peut pas être vide | Erreur |
 | **V-REC-004** | `frequency` doit être: daily, weekly, monthly, yearly | Erreur |
 | **V-REC-005** | Si monthly, `dayOfMonth` doit être entre 1 et 31 | Erreur |
-| **V-REC-006** | Si weekly, `dayOfWeek` doit être entre 0 et 6 | Erreur |
+| **V-REC-006** | Si weekly, `dayOfWeek` doit être entre 1 et 7 (ISO 8601: 1=Lundi, 7=Dimanche) | Erreur |
 | **V-REC-007** | Si yearly, `dayOfYear` doit être au format MM-DD | Erreur |
-| **V-REC-008** | `startDate` doit être au format YYYY-MM-DD | Erreur |
+| **V-REC-008** | `startDate` doit être au format YYYY-MM-DD (ISO 8601) | Erreur |
 | **V-REC-009** | Si `endDate` défini, `endDate` >= `startDate` | Erreur |
 | **V-REC-010** | `enabled` doit être un booléen | Erreur |
 | **V-REC-011** | Le template doit être une transaction valide | Erreur |
 | **V-REC-012** | Le template doit respecter toutes les règles V-TXN-* | Erreur |
+
+### Convention dayOfWeek (ISO 8601)
+
+**IMPORTANT** : Ce système utilise la convention ISO 8601 pour les jours de la semaine :
+
+| Valeur | Jour |
+|--------|------|
+| 1 | Lundi (Monday) |
+| 2 | Mardi (Tuesday) |
+| 3 | Mercredi (Wednesday) |
+| 4 | Jeudi (Thursday) |
+| 5 | Vendredi (Friday) |
+| 6 | Samedi (Saturday) |
+| 7 | Dimanche (Sunday) |
+
+**Note** : Cette convention diffère de JavaScript (0=Dimanche) et Python (0=Lundi). Soyez vigilant lors de l'implémentation !
 
 ## 9. Validation de cohérence globale
 
@@ -275,10 +335,12 @@ currency = "CHF"
 
 | Règle | Description | Sévérité |
 |-------|-------------|----------|
-| **V-TIME-001** | Les transactions doivent être ordonnées par date (recommandé) | Avertissement |
-| **V-TIME-002** | Pas de transactions avant `metadata.created` | Avertissement |
+| **V-TIME-001** | Les transactions doivent être ordonnées par date (recommandé pour performance) | Avertissement |
+| **V-TIME-002** | Pas de transactions avant `metadata.created` (intégrité temporelle) | Erreur |
 | **V-TIME-003** | Les taux de change doivent être <= date de transaction | Erreur |
 | **V-TIME-004** | Pour une conversion, un taux doit exister <= date transaction | Erreur |
+
+**Note V-TIME-002** : Cette règle évite les incohérences temporelles. Si vous avez des transactions historiques antérieures à la création du fichier, ajustez `metadata.created` en conséquence.
 
 ### 9.3 Doublons
 
@@ -432,3 +494,51 @@ Créer des fichiers TOML de test:
 - **Mode strict** : Toutes les règles activées, pas de sauvegarde si erreurs
 - **Mode permissif** : Autoriser la sauvegarde avec avertissements seulement
 - Configurable dans les paramètres
+
+---
+
+## 16. Récapitulatif des règles de validation
+
+### 16.1 Comptage total des règles
+
+| Catégorie | Préfixe | Nombre | Règles |
+|-----------|---------|--------|--------|
+| **Fichier TOML** | V-FILE | 5 | 001-005 |
+| **Métadonnées** | V-META | 5 | 001-005 |
+| **Devises** | V-CUR | 12 | 001-012 |
+| **Comptes** | V-ACC | 13 | 001-013 |
+| **Transactions** | V-TXN | 6 | 001-006 |
+| **Postings** | V-POST | 7 | 001-007 |
+| **Équilibre** | V-BAL | 3 | 001-003 |
+| **Taux de change** | V-FX | 6 | 001-006 |
+| **Logique métier** | V-LOG | 5 | 001-005 |
+| **Budgets** | V-BUD | 12 | 001-012 |
+| **Récurrences** | V-REC | 12 | 001-012 |
+| **Références** | V-REF | 5 | 001-005 |
+| **Temporel** | V-TIME | 4 | 001-004 |
+| **Doublons** | V-DUP | 1 | 001 |
+| **Soldes** | V-SOL | 4 | 001-004 |
+| **Équation comptable** | V-EQ | 1 | 001 |
+| **TOTAL** | | **102** | |
+
+### 16.2 Répartition par sévérité
+
+| Sévérité | Nombre approximatif | Commentaire |
+|----------|---------------------|-------------|
+| **Erreur** | ~85 | Règles bloquantes, empêchent la sauvegarde |
+| **Avertissement** | ~15 | Règles non-bloquantes, signalent des situations suspectes |
+| **Info** | ~2 | Informations pour l'utilisateur |
+
+### 16.3 Règles critiques pour l'intégrité financière
+
+Les règles suivantes sont **absolument critiques** et ne doivent JAMAIS être désactivées :
+
+1. **V-BAL-001** : Équilibre des transactions (Σ = 0)
+2. **V-EQ-001** : Équation comptable fondamentale
+3. **V-FX-004** : Cohérence des conversions de devises
+4. **V-POST-001** : Existence des comptes référencés
+5. **V-POST-004/005/006** : Cohérence temporelle des comptes
+6. **V-REF-001 à V-REF-004** : Intégrité référentielle
+7. **V-CUR-006** : Une seule devise par défaut
+
+**Note** : Même en mode permissif, ces règles critiques doivent rester actives.

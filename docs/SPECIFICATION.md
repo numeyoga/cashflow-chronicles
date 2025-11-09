@@ -278,20 +278,36 @@ Définition de budgets par catégorie de dépenses:
 
 ## 7. Évolutions futures
 
-### 7.1 Phase 2 (après MVP)
+### 7.1 Roadmap v1.0 (Phases 1-4)
 
-- Support des pièces jointes (reçus, factures)
-- Réconciliation bancaire
-- Multi-utilisateurs/partage de budgets
-- Application mobile native
-- Synchronisation cloud (optionnelle)
+**Couvert par les Epics** :
+- ✅ Multi-devises et taux de change (Phase 2)
+- ✅ Budgets et rapports (Phase 3)
+- ✅ Transactions récurrentes (Phase 3)
+- ✅ Import/Export CSV (Phase 4)
+- ✅ Réconciliation bancaire (Phase 4)
+- ✅ Performance et optimisation (Phase 4)
 
-### 7.2 Phase 3
+### 7.2 Hors scope v1.0 (Futures versions)
 
+Les fonctionnalités suivantes sont **reportées** à des versions ultérieures :
+
+**v2.0 - Collaboration** :
+- Support des pièces jointes (reçus, factures) - `EPIC-023`
+- Multi-utilisateurs / partage de budgets - `EPIC-024`
+- Synchronisation cloud optionnelle - `EPIC-025`
+
+**v2.1 - Mobile** :
+- Application mobile native (iOS/Android) - `EPIC-026`
+- Mode hors ligne avec sync
+
+**v3.0 - Intelligence** :
 - OCR pour extraction automatique des données de reçus
 - Catégorisation automatique par IA
 - Prévisions et recommandations budgétaires
 - Intégration avec des APIs bancaires (Open Banking)
+
+**Note** : Ces fonctionnalités avancées ne sont pas planifiées pour v1.0 afin de maintenir un scope réaliste. Elles pourront être ajoutées dans des versions futures selon les retours utilisateurs.
 
 ## 8. Glossaire
 
