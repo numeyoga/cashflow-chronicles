@@ -192,7 +192,7 @@ currency = "CHF"
 
 **Transaction avec conversion:**
 ```toml
-# Exemple: Transfert de 100 EUR → CHF
+# Exemple: Conversion de 95 CHF en 100 EUR (achat de devises)
 # Taux: 1 EUR = 0.95 CHF (standard marché)
 
 [[transaction.posting]]

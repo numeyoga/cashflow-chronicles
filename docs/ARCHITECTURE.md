@@ -361,7 +361,7 @@ interface RecurringTransaction {
   name: string
   frequency: Frequency
   dayOfMonth?: number           // 1-31 si monthly
-  dayOfWeek?: number            // 0-6 si weekly
+  dayOfWeek?: number            // 1-7 si weekly (ISO 8601: 1=Lundi, 7=Dimanche)
   dayOfYear?: string            // MM-DD si yearly
   startDate: Date
   endDate?: Date

@@ -501,7 +501,7 @@ enabled = true
 | `name` | string | Oui | Nom de la récurrence |
 | `frequency` | string | Oui | Fréquence: `daily`, `weekly`, `monthly`, `yearly` |
 | `dayOfMonth` | integer | Conditionnel | Jour du mois (1-31) si monthly |
-| `dayOfWeek` | integer | Conditionnel | Jour de semaine (0-6, 0=Lundi) si weekly |
+| `dayOfWeek` | integer | Conditionnel | Jour de semaine (1-7, 1=Lundi ISO 8601) si weekly |
 | `dayOfYear` | string | Conditionnel | MM-DD si yearly |
 | `startDate` | date | Oui | Date de début (YYYY-MM-DD) |
 | `endDate` | date | Non | Date de fin (absente = indéfini) |
