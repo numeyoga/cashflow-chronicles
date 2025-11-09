@@ -17,7 +17,7 @@
 | Couche | Technologie | Justification |
 |--------|-------------|---------------|
 | **Framework UI** | SvelteKit | Réactivité, SSG/SPA, performance |
-| **Langage** | TypeScript | Type safety, maintenabilité |
+| **Langage** | JavaScript | Flexibilité, rapidité de développement |
 | **Stockage** | TOML v1.0.0 | Lisibilité, Git-friendly, commentaires |
 | **Tests unitaires** | Vitest | Rapide, ESM natif |
 | **Tests E2E** | Playwright | Multi-navigateur, fiable |
@@ -153,17 +153,17 @@ class Transaction {
   id: TransactionId
   date: Date
   description: string
-  postings: Posting[]       // IMPORTANT: Tableau en TypeScript
+  postings: Posting[]       // IMPORTANT: Tableau en JavaScript
   // ... méthodes métier
   isBalanced(): boolean
 }
 ```
 
-**⚠️ Note importante - Conventions de nommage TypeScript vs TOML** :
-- **TypeScript** : Utilise le pluriel pour les tableaux (ex: `postings: Posting[]`, `exchangeRates: ExchangeRateHistory[]`)
+**⚠️ Note importante - Conventions de nommage JavaScript vs TOML** :
+- **JavaScript** : Utilise le pluriel pour les tableaux (ex: `postings: Posting[]`, `exchangeRates: ExchangeRateHistory[]`)
 - **TOML** : Utilise le singulier pour les array of tables (ex: `[[transaction.posting]]`, `[[currency.exchangeRate]]`)
 - Cette différence est normale et due aux conventions de chaque format.
-- Les enums TypeScript utilisent PascalCase, les valeurs TOML correspondantes sont en lowercase (ex: `Daily = 'daily'`)
+- Les enums JavaScript utilisent PascalCase, les valeurs TOML correspondantes sont en lowercase (ex: `Daily = 'daily'`)
 
 #### Value Objects
 ```typescript
@@ -1804,10 +1804,10 @@ class PerformanceMonitor {
 
 ### 15.1 Conventions de code
 
-#### TypeScript
+#### JavaScript
 - **Naming**: PascalCase pour classes, camelCase pour fonctions/variables
-- **Types**: Utiliser interfaces pour les contrats publics
-- **Null safety**: Utiliser `| null` explicitement, éviter `undefined`
+- **Types**: Utiliser JSDoc pour documenter les types et contrats publics
+- **Null safety**: Vérifier explicitement `null` et `undefined`
 
 #### Structure des fichiers
 ```typescript

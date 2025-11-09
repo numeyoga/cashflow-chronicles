@@ -168,15 +168,15 @@ equivalentAmount = 95.00       # Montant équivalent en CHF
 
 ## 🟡 Corrections Importantes
 
-### 8. ✅ Conventions de nommage TypeScript vs TOML clarifiées
+### 8. ✅ Conventions de nommage JavaScript vs TOML clarifiées
 
 **Fichiers corrigés** :
 - `ARCHITECTURE.md` : Note importante ajoutée après définitions d'entités
 
 **Clarifications** :
-- **TypeScript** : Pluriel pour tableaux (`postings`, `exchangeRates`)
+- **JavaScript** : Pluriel pour tableaux (`postings`, `exchangeRates`)
 - **TOML** : Singulier pour array of tables (`[[transaction.posting]]`, `[[currency.exchangeRate]]`)
-- **Enums** : PascalCase en TypeScript, lowercase en TOML (`Daily = 'daily'`)
+- **Enums** : PascalCase en JavaScript, lowercase en TOML (`Daily = 'daily'`)
 
 ---
 
@@ -283,7 +283,7 @@ Section ajoutée dans VALIDATION-RULES.md (16.3) listant les 7 règles absolumen
 
 ### Améliorations importantes
 
-- [x] ✅ Conventions TypeScript/TOML clarifiées
+- [x] ✅ Conventions JavaScript/TOML clarifiées
 - [x] ✅ Pattern matching budgets spécifié
 - [x] ✅ Roadmap uniformisée
 - [x] ✅ Standards ISO documentés
@@ -325,7 +325,7 @@ Section ajoutée dans VALIDATION-RULES.md (16.3) listant les 7 règles absolumen
 
 6. **ARCHITECTURE.md** : Mises à jour
    - ADR-004 corrigé (102 règles)
-   - Note TypeScript/TOML ajoutée
+   - Note JavaScript/TOML ajoutée
    - Standards documentés
 
 7. **docs/README.md** : Harmonisation

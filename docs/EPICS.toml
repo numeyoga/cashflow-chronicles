@@ -47,7 +47,7 @@ acceptanceCriteria = [
 
 technicalNotes = """
 Parsers recommandés:
-- JavaScript/TypeScript: @iarna/toml ou smol-toml
+- JavaScript: @iarna/toml ou smol-toml
 - Validation stricte du schéma TOML
 - Gestion des erreurs de parsing avec messages clairs
 - Système de backup avec horodatage
