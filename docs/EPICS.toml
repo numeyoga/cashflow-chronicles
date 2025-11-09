@@ -1,0 +1,1264 @@
+# Epics - Cashflow Chronicles
+# Document de planification Agile décrivant tous les Epics de l'application
+# Version: 1.0.0
+# Dernière mise à jour: 2025-01-08
+
+version = "1.0.0"
+
+[metadata]
+created = "2025-01-08"
+lastModified = "2025-01-08"
+author = "Équipe Cashflow Chronicles"
+description = "Définition de tous les Epics pour couvrir 100% des fonctionnalités de l'application"
+
+# =============================================================================
+# EPIC 1 : FONDATIONS - Stockage et Parser TOML
+# =============================================================================
+[[epic]]
+id = "EPIC-001"
+title = "Stockage et Parser TOML"
+priority = "Critique"
+businessValue = "Très Haute"
+phase = "MVP"
+
+description = """
+Implémenter le système de stockage de données basé sur TOML et le parser pour lire/écrire
+le fichier de données. C'est la fondation de l'application car toutes les données sont
+stockées dans un fichier TOML local.
+"""
+
+objectives = [
+  "Choisir et intégrer un parser TOML compatible avec la spec v1.0.0",
+  "Implémenter la lecture du fichier TOML avec gestion d'erreurs",
+  "Implémenter l'écriture/sauvegarde du fichier TOML",
+  "Gérer l'encodage UTF-8 et la validation de format",
+  "Implémenter un système de sauvegarde automatique",
+  "Créer un mécanisme de backup avant chaque sauvegarde"
+]
+
+acceptanceCriteria = [
+  "Le fichier TOML peut être chargé et parsé sans erreur",
+  "Les modifications sont sauvegardées automatiquement",
+  "Un backup est créé avant chaque modification",
+  "Les erreurs de parsing sont affichées clairement à l'utilisateur",
+  "Le format UTF-8 est respecté",
+  "La structure du fichier est validée selon la spec"
+]
+
+technicalNotes = """
+Parsers recommandés:
+- JavaScript/TypeScript: @iarna/toml ou smol-toml
+- Validation stricte du schéma TOML
+- Gestion des erreurs de parsing avec messages clairs
+- Système de backup avec horodatage
+"""
+
+dependencies = []
+estimatedComplexity = "Moyenne"
+
+  [epic.metrics]
+  targetLoadTime = "< 1s pour 10 000 transactions"
+  targetSaveTime = "< 500ms"
+
+# =============================================================================
+# EPIC 2 : Gestion des Devises et Taux de Change
+# =============================================================================
+[[epic]]
+id = "EPIC-002"
+title = "Gestion des Devises et Taux de Change"
+priority = "Critique"
+businessValue = "Très Haute"
+phase = "MVP"
+
+description = """
+Implémenter la gestion multi-devises avec support des taux de change historiques.
+L'application doit supporter CHF, EUR, USD et autres devises ISO 4217.
+"""
+
+objectives = [
+  "Créer le modèle de données pour les devises (code, nom, symbole, décimales)",
+  "Implémenter la gestion de la devise par défaut",
+  "Créer le système de gestion des taux de change historiques",
+  "Implémenter les conversions entre devises",
+  "Valider les codes ISO 4217",
+  "Créer l'interface de gestion des devises"
+]
+
+acceptanceCriteria = [
+  "Les devises respectent la norme ISO 4217",
+  "Une et une seule devise est définie comme défaut",
+  "Les taux de change peuvent être enregistrés avec date",
+  "Les conversions utilisent le bon taux selon la date",
+  "L'historique des taux est conservé",
+  "L'interface permet d'ajouter/modifier/supprimer des devises",
+  "Les devises utilisées dans des transactions ne peuvent pas être supprimées"
+]
+
+userStories = [
+  "En tant qu'utilisateur, je veux définir ma devise principale (CHF)",
+  "En tant qu'utilisateur, je veux ajouter d'autres devises (EUR, USD)",
+  "En tant qu'utilisateur, je veux enregistrer les taux de change",
+  "En tant qu'utilisateur, je veux voir l'historique des taux",
+  "En tant qu'utilisateur, je veux convertir des montants entre devises"
+]
+
+dependencies = ["EPIC-001"]
+estimatedComplexity = "Moyenne"
+
+  [epic.validation]
+  rules = ["V-CUR-001 à V-CUR-012", "V-META-004", "V-META-005"]
+
+# =============================================================================
+# EPIC 3 : Gestion des Comptes
+# =============================================================================
+[[epic]]
+id = "EPIC-003"
+title = "Gestion des Comptes"
+priority = "Critique"
+businessValue = "Très Haute"
+phase = "MVP"
+
+description = """
+Implémenter le système de gestion des comptes avec support de la hiérarchie et des
+5 types de comptes (Assets, Liabilities, Income, Expenses, Equity) selon les principes
+de comptabilité en partie double.
+"""
+
+objectives = [
+  "Créer le modèle de compte avec tous les attributs (id, name, type, currency, dates)",
+  "Implémenter la structure hiérarchique avec notation par points",
+  "Créer les opérations CRUD pour les comptes",
+  "Valider la cohérence du nom hiérarchique avec le type",
+  "Implémenter le calcul des soldes de comptes",
+  "Gérer l'ouverture et la fermeture de comptes",
+  "Créer l'interface de visualisation de la hiérarchie"
+]
+
+acceptanceCriteria = [
+  "Les comptes respectent les 5 types standards",
+  "Le nom hiérarchique est validé (format Type:Cat:SubCat)",
+  "Le premier segment correspond au type du compte",
+  "Chaque compte a un ID unique au format acc_XXX",
+  "Les comptes fermés ne peuvent plus recevoir de transactions",
+  "La hiérarchie est affichée visuellement dans l'interface",
+  "Le solde de chaque compte est calculé correctement"
+]
+
+userStories = [
+  "En tant qu'utilisateur, je veux créer un compte bancaire (Assets)",
+  "En tant qu'utilisateur, je veux créer des catégories de dépenses (Expenses)",
+  "En tant qu'utilisateur, je veux voir tous mes comptes organisés par type",
+  "En tant qu'utilisateur, je veux voir le solde actuel de chaque compte",
+  "En tant qu'utilisateur, je veux fermer un compte inactif",
+  "En tant qu'utilisateur, je veux organiser mes comptes de manière hiérarchique"
+]
+
+dependencies = ["EPIC-001", "EPIC-002"]
+estimatedComplexity = "Haute"
+
+  [epic.validation]
+  rules = ["V-ACC-001 à V-ACC-013"]
+
+  [epic.accountTypes]
+  types = ["Assets", "Liabilities", "Income", "Expenses", "Equity"]
+  hierarchyLevels = "Minimum 2 segments"
+
+# =============================================================================
+# EPIC 4 : Gestion des Transactions Simples
+# =============================================================================
+[[epic]]
+id = "EPIC-004"
+title = "Gestion des Transactions Simples (Mono-devise)"
+priority = "Critique"
+businessValue = "Très Haute"
+phase = "MVP"
+
+description = """
+Implémenter la création et gestion des transactions financières simples (une seule devise)
+en respectant les principes de comptabilité en partie double. Chaque transaction doit
+être équilibrée (somme = 0).
+"""
+
+objectives = [
+  "Créer le modèle de transaction avec postings",
+  "Implémenter la validation de l'équilibre (Σ = 0)",
+  "Créer l'interface de saisie de transaction",
+  "Implémenter la validation des comptes et dates",
+  "Permettre les transactions multi-postings (> 2 écritures)",
+  "Gérer les tags et métadonnées",
+  "Créer la liste des transactions avec filtres"
+]
+
+acceptanceCriteria = [
+  "Une transaction contient minimum 2 postings",
+  "La somme des montants de tous les postings = 0",
+  "Chaque posting référence un compte existant",
+  "La devise de chaque posting correspond à celle du compte",
+  "Les IDs sont uniques (format txn_XXX)",
+  "L'interface guide l'utilisateur pour équilibrer la transaction",
+  "Les transactions peuvent être filtrées par date, compte, montant"
+]
+
+userStories = [
+  "En tant qu'utilisateur, je veux enregistrer une dépense (Expenses → Assets)",
+  "En tant qu'utilisateur, je veux enregistrer un revenu (Assets ← Income)",
+  "En tant qu'utilisateur, je veux faire un transfert entre comptes (Assets → Assets)",
+  "En tant qu'utilisateur, je veux répartir une dépense sur plusieurs comptes",
+  "En tant qu'utilisateur, je veux voir toutes mes transactions",
+  "En tant qu'utilisateur, je veux rechercher des transactions"
+]
+
+dependencies = ["EPIC-001", "EPIC-002", "EPIC-003"]
+estimatedComplexity = "Haute"
+
+  [epic.validation]
+  rules = ["V-TXN-001 à V-TXN-006", "V-POST-001 à V-POST-006", "V-BAL-001"]
+
+  [epic.transactionTypes]
+  simple = "Même devise pour tous les postings"
+  multiPosting = "Plus de 2 écritures autorisé"
+
+# =============================================================================
+# EPIC 5 : Gestion des Transactions Multi-devises
+# =============================================================================
+[[epic]]
+id = "EPIC-005"
+title = "Gestion des Transactions Multi-devises"
+priority = "Haute"
+businessValue = "Haute"
+phase = "Phase 2"
+
+description = """
+Étendre la gestion des transactions pour supporter les conversions entre devises avec
+taux de change. Permettre les transferts entre comptes de devises différentes.
+"""
+
+objectives = [
+  "Implémenter la gestion des taux de change dans les postings",
+  "Valider l'équilibre multi-devises",
+  "Créer l'interface de saisie avec conversion",
+  "Calculer automatiquement les montants équivalents",
+  "Gérer les frais de change",
+  "Valider la cohérence des conversions"
+]
+
+acceptanceCriteria = [
+  "Les transactions multi-devises s'équilibrent dans toutes les devises",
+  "Le taux de change est obligatoire pour les conversions",
+  "L'equivalentAmount correspond au calcul montant × taux",
+  "L'interface affiche le taux et le montant équivalent",
+  "Les frais de change peuvent être ajoutés",
+  "Le taux utilisé est <= date de la transaction"
+]
+
+userStories = [
+  "En tant qu'utilisateur, je veux transférer de l'argent de CHF vers EUR",
+  "En tant qu'utilisateur, je veux enregistrer le taux de change utilisé",
+  "En tant qu'utilisateur, je veux voir le montant équivalent en devise de base",
+  "En tant qu'utilisateur, je veux enregistrer les frais de conversion",
+  "En tant qu'utilisateur, je veux dépenser dans une devise étrangère"
+]
+
+dependencies = ["EPIC-001", "EPIC-002", "EPIC-003", "EPIC-004"]
+estimatedComplexity = "Très Haute"
+
+  [epic.validation]
+  rules = ["V-BAL-002", "V-BAL-003", "V-FX-001 à V-FX-005"]
+
+  [epic.features]
+  autoCalculation = "Calcul automatique du montant équivalent"
+  rateHistory = "Utilisation des taux historiques"
+
+# =============================================================================
+# EPIC 6 : Système de Validation et Règles d'Intégrité
+# =============================================================================
+[[epic]]
+id = "EPIC-006"
+title = "Système de Validation et Règles d'Intégrité"
+priority = "Critique"
+businessValue = "Très Haute"
+phase = "MVP"
+
+description = """
+Implémenter le système complet de validation avec les 150+ règles documentées pour
+garantir l'intégrité des données financières. Validation structurelle, métier et
+d'intégrité globale.
+"""
+
+objectives = [
+  "Implémenter toutes les règles de validation (V-XXX-YYY)",
+  "Créer le système de rapport de validation",
+  "Implémenter la validation en temps réel dans l'UI",
+  "Gérer les niveaux de sévérité (Erreur, Avertissement, Info)",
+  "Créer les messages d'erreur explicites",
+  "Implémenter la validation incrémentale",
+  "Vérifier l'équation comptable fondamentale"
+]
+
+acceptanceCriteria = [
+  "Toutes les 150+ règles sont implémentées",
+  "La validation s'exécute au chargement du fichier",
+  "Les erreurs bloquent la sauvegarde",
+  "Les avertissements sont affichés mais n'empêchent pas la sauvegarde",
+  "Le rapport de validation est clair et actionnable",
+  "L'équation Assets = Liabilities + Equity + (Income - Expenses) est vérifiée",
+  "La validation incrémentale est < 10ms"
+]
+
+userStories = [
+  "En tant qu'utilisateur, je veux être averti si mes données sont invalides",
+  "En tant qu'utilisateur, je veux savoir exactement quelle règle est violée",
+  "En tant qu'utilisateur, je veux des suggestions pour corriger les erreurs",
+  "En tant qu'utilisateur, je veux voir un résumé de la validation",
+  "En tant qu'utilisateur, je veux choisir entre mode strict et permissif"
+]
+
+dependencies = ["EPIC-001", "EPIC-002", "EPIC-003", "EPIC-004"]
+estimatedComplexity = "Très Haute"
+
+  [epic.validation]
+  totalRules = "150+"
+  categories = ["Structurelle", "Métier", "Intégrité globale"]
+  severityLevels = ["Erreur", "Avertissement", "Info"]
+
+  [epic.performance]
+  fullValidation = "< 100ms pour 1000 transactions"
+  incrementalValidation = "< 10ms"
+
+# =============================================================================
+# EPIC 7 : Gestion des Budgets
+# =============================================================================
+[[epic]]
+id = "EPIC-007"
+title = "Gestion des Budgets"
+priority = "Haute"
+businessValue = "Haute"
+phase = "Phase 3"
+
+description = """
+Implémenter le système de budgétisation permettant de définir des budgets par catégorie
+de dépenses et de suivre la progression par rapport aux objectifs.
+"""
+
+objectives = [
+  "Créer le modèle de budget avec périodes (daily, weekly, monthly, yearly)",
+  "Implémenter les patterns de comptes avec wildcards",
+  "Calculer l'utilisation du budget en temps réel",
+  "Créer le système d'alertes (warning, critical)",
+  "Implémenter l'interface de définition de budgets",
+  "Créer les rapports de suivi budget vs. réel"
+]
+
+acceptanceCriteria = [
+  "Les budgets peuvent être définis pour différentes périodes",
+  "Les patterns de comptes avec * matchent correctement",
+  "L'utilisation du budget est calculée automatiquement",
+  "Les alertes sont déclenchées aux seuils configurés",
+  "L'interface affiche la progression visuellement",
+  "Les budgets peuvent avoir des dates de début et fin"
+]
+
+userStories = [
+  "En tant qu'utilisateur, je veux définir un budget mensuel pour l'alimentation",
+  "En tant qu'utilisateur, je veux voir mon utilisation du budget en temps réel",
+  "En tant qu'utilisateur, je veux être alerté à 80% du budget",
+  "En tant qu'utilisateur, je veux comparer budget vs. réel",
+  "En tant qu'utilisateur, je veux définir des budgets annuels",
+  "En tant qu'utilisateur, je veux des budgets pour plusieurs catégories"
+]
+
+dependencies = ["EPIC-001", "EPIC-003", "EPIC-004"]
+estimatedComplexity = "Haute"
+
+  [epic.validation]
+  rules = ["V-BUD-001 à V-BUD-012"]
+
+  [epic.features]
+  patterns = "Support des wildcards (*) dans accountPattern"
+  periods = ["daily", "weekly", "monthly", "quarterly", "yearly"]
+  alerts = ["warningThreshold", "criticalThreshold"]
+
+# =============================================================================
+# EPIC 8 : Transactions Récurrentes
+# =============================================================================
+[[epic]]
+id = "EPIC-008"
+title = "Transactions Récurrentes"
+priority = "Haute"
+businessValue = "Haute"
+phase = "Phase 3"
+
+description = """
+Implémenter le système de transactions récurrentes permettant d'automatiser les
+opérations répétitives comme le salaire, le loyer, les abonnements.
+"""
+
+objectives = [
+  "Créer le modèle de récurrence avec fréquences",
+  "Implémenter les templates de transaction",
+  "Gérer les variables de template ({{month}}, {{year}}, etc.)",
+  "Créer le système de génération automatique",
+  "Implémenter l'activation/désactivation des récurrences",
+  "Créer l'interface de gestion des récurrences"
+]
+
+acceptanceCriteria = [
+  "Les fréquences daily, weekly, monthly, yearly sont supportées",
+  "Les templates génèrent des transactions valides",
+  "Les variables sont correctement substituées",
+  "Les récurrences peuvent être activées/désactivées",
+  "Les dates de début et fin sont respectées",
+  "L'interface permet de créer/modifier/supprimer des récurrences"
+]
+
+userStories = [
+  "En tant qu'utilisateur, je veux automatiser mon salaire mensuel",
+  "En tant qu'utilisateur, je veux créer une récurrence pour mon loyer",
+  "En tant qu'utilisateur, je veux des abonnements hebdomadaires",
+  "En tant qu'utilisateur, je veux désactiver temporairement une récurrence",
+  "En tant qu'utilisateur, je veux voir les prochaines occurrences",
+  "En tant qu'utilisateur, je veux modifier le montant d'une récurrence"
+]
+
+dependencies = ["EPIC-001", "EPIC-003", "EPIC-004"]
+estimatedComplexity = "Haute"
+
+  [epic.validation]
+  rules = ["V-REC-001 à V-REC-012"]
+
+  [epic.features]
+  frequencies = ["daily", "weekly", "monthly", "yearly"]
+  templateVariables = ["{{date}}", "{{day}}", "{{month}}", "{{year}}", "{{monthName}}"]
+
+# =============================================================================
+# EPIC 9 : Dashboard et Vue d'Ensemble
+# =============================================================================
+[[epic]]
+id = "EPIC-009"
+title = "Dashboard et Vue d'Ensemble"
+priority = "Haute"
+businessValue = "Très Haute"
+phase = "MVP"
+
+description = """
+Créer le tableau de bord principal affichant une vue d'ensemble de la situation
+financière avec soldes, graphiques et transactions récentes.
+"""
+
+objectives = [
+  "Créer la page Dashboard",
+  "Afficher les soldes totaux par devise",
+  "Calculer et afficher la valeur nette",
+  "Créer les widgets de synthèse",
+  "Afficher les transactions récentes",
+  "Créer des graphiques d'évolution",
+  "Afficher les alertes de budget"
+]
+
+acceptanceCriteria = [
+  "Le dashboard charge en < 2s",
+  "Les soldes sont affichés pour chaque devise",
+  "La valeur nette est calculée correctement",
+  "Les graphiques sont interactifs",
+  "Les 10 dernières transactions sont affichées",
+  "Les alertes de budget sont visibles",
+  "Le dashboard est responsive"
+]
+
+userStories = [
+  "En tant qu'utilisateur, je veux voir ma situation financière en un coup d'œil",
+  "En tant qu'utilisateur, je veux voir mes soldes par devise",
+  "En tant qu'utilisateur, je veux voir l'évolution de ma valeur nette",
+  "En tant qu'utilisateur, je veux voir mes dernières transactions",
+  "En tant qu'utilisateur, je veux être alerté si je dépasse un budget",
+  "En tant qu'utilisateur, je veux des graphiques clairs et visuels"
+]
+
+dependencies = ["EPIC-001", "EPIC-002", "EPIC-003", "EPIC-004", "EPIC-007"]
+estimatedComplexity = "Haute"
+
+  [epic.components]
+  widgets = [
+    "Soldes totaux par devise",
+    "Valeur nette",
+    "Graphique d'évolution",
+    "Transactions récentes",
+    "Alertes de budget",
+    "Répartition des dépenses"
+  ]
+
+# =============================================================================
+# EPIC 10 : Rapports et Visualisations
+# =============================================================================
+[[epic]]
+id = "EPIC-010"
+title = "Rapports et Visualisations"
+priority = "Haute"
+businessValue = "Haute"
+phase = "Phase 3"
+
+description = """
+Implémenter le système de rapports financiers avec bilan, compte de résultat, et
+graphiques d'analyse détaillés.
+"""
+
+objectives = [
+  "Créer le rapport Bilan (Balance Sheet)",
+  "Créer le rapport Compte de Résultat (Income Statement)",
+  "Implémenter les graphiques d'évolution temporelle",
+  "Créer les analyses multi-devises",
+  "Implémenter les filtres de période",
+  "Créer l'export PDF des rapports",
+  "Créer des graphiques personnalisables"
+]
+
+acceptanceCriteria = [
+  "Le bilan affiche Assets, Liabilities et Equity correctement",
+  "Le compte de résultat affiche Income et Expenses",
+  "Les rapports peuvent être filtrés par période",
+  "Les graphiques sont interactifs et exportables",
+  "Les montants multi-devises sont convertis correctement",
+  "Les rapports peuvent être exportés en PDF",
+  "L'analyse par catégorie est disponible"
+]
+
+userStories = [
+  "En tant qu'utilisateur, je veux voir mon bilan comptable",
+  "En tant qu'utilisateur, je veux voir mon compte de résultat mensuel",
+  "En tant qu'utilisateur, je veux analyser mes dépenses par catégorie",
+  "En tant qu'utilisateur, je veux voir l'évolution de ma valeur nette",
+  "En tant qu'utilisateur, je veux exporter un rapport en PDF",
+  "En tant qu'utilisateur, je veux comparer mes revenus et dépenses"
+]
+
+dependencies = ["EPIC-001", "EPIC-002", "EPIC-003", "EPIC-004", "EPIC-005"]
+estimatedComplexity = "Très Haute"
+
+  [epic.reports]
+  types = [
+    "Bilan (Balance Sheet)",
+    "Compte de Résultat (Income Statement)",
+    "Évolution temporelle",
+    "Analyse multi-devises",
+    "Répartition par catégorie"
+  ]
+
+  [epic.charts]
+  types = [
+    "Ligne (évolution)",
+    "Barres (comparaison)",
+    "Camembert (répartition)",
+    "Aire (cumul)"
+  ]
+
+# =============================================================================
+# EPIC 11 : Import/Export de Données
+# =============================================================================
+[[epic]]
+id = "EPIC-011"
+title = "Import/Export de Données"
+priority = "Moyenne"
+businessValue = "Moyenne"
+phase = "Phase 4"
+
+description = """
+Implémenter les fonctionnalités d'import et export de données pour faciliter la migration
+et l'analyse externe.
+"""
+
+objectives = [
+  "Implémenter l'import CSV de transactions",
+  "Créer le système de mapping de colonnes",
+  "Implémenter la détection de doublons",
+  "Créer l'export CSV",
+  "Créer l'export TOML",
+  "Implémenter l'export vers Beancount/Ledger (optionnel)",
+  "Gérer les erreurs d'import"
+]
+
+acceptanceCriteria = [
+  "Les transactions peuvent être importées depuis CSV",
+  "Le mapping de colonnes est configurable",
+  "Les doublons sont détectés et signalés",
+  "L'export CSV contient toutes les transactions",
+  "L'export TOML est valide",
+  "Les erreurs d'import sont listées clairement",
+  "Un aperçu des données à importer est affiché"
+]
+
+userStories = [
+  "En tant qu'utilisateur, je veux importer mes relevés bancaires CSV",
+  "En tant qu'utilisateur, je veux mapper les colonnes CSV",
+  "En tant qu'utilisateur, je veux détecter les doublons avant import",
+  "En tant qu'utilisateur, je veux exporter toutes mes données en CSV",
+  "En tant qu'utilisateur, je veux exporter vers un autre outil",
+  "En tant qu'utilisateur, je veux sauvegarder mon fichier TOML"
+]
+
+dependencies = ["EPIC-001", "EPIC-003", "EPIC-004"]
+estimatedComplexity = "Haute"
+
+  [epic.features]
+  importFormats = ["CSV"]
+  exportFormats = ["CSV", "TOML", "Beancount (optionnel)", "Ledger (optionnel)"]
+
+  [epic.validation]
+  rules = ["V-DUP-001"]
+
+# =============================================================================
+# EPIC 12 : Interface Liste des Comptes
+# =============================================================================
+[[epic]]
+id = "EPIC-012"
+title = "Interface Liste et Gestion des Comptes"
+priority = "Critique"
+businessValue = "Très Haute"
+phase = "MVP"
+
+description = """
+Créer l'interface complète de gestion des comptes avec vue hiérarchique, filtres,
+et opérations CRUD.
+"""
+
+objectives = [
+  "Créer la page de liste des comptes",
+  "Afficher la hiérarchie visuellement (tree view)",
+  "Implémenter les filtres par type et devise",
+  "Créer le formulaire de création de compte",
+  "Créer le formulaire d'édition de compte",
+  "Implémenter la clôture de compte",
+  "Afficher les soldes en temps réel"
+]
+
+acceptanceCriteria = [
+  "Les comptes sont affichés en arborescence",
+  "Les filtres par type et devise fonctionnent",
+  "Le formulaire valide les données en temps réel",
+  "Les comptes peuvent être créés/modifiés/fermés",
+  "Les soldes sont affichés à côté de chaque compte",
+  "L'interface est responsive",
+  "Les comptes utilisés dans transactions ne peuvent pas être supprimés"
+]
+
+userStories = [
+  "En tant qu'utilisateur, je veux voir tous mes comptes organisés",
+  "En tant qu'utilisateur, je veux filtrer par type de compte",
+  "En tant qu'utilisateur, je veux créer un nouveau compte facilement",
+  "En tant qu'utilisateur, je veux modifier les informations d'un compte",
+  "En tant qu'utilisateur, je veux voir le solde de chaque compte",
+  "En tant qu'utilisateur, je veux fermer un compte inactif"
+]
+
+dependencies = ["EPIC-001", "EPIC-002", "EPIC-003"]
+estimatedComplexity = "Haute"
+
+  [epic.uiComponents]
+  components = [
+    "TreeView hiérarchique",
+    "Filtres (type, devise, statut)",
+    "Formulaire création",
+    "Formulaire édition",
+    "Badge solde",
+    "Bouton clôture"
+  ]
+
+# =============================================================================
+# EPIC 13 : Interface Liste et Gestion des Transactions
+# =============================================================================
+[[epic]]
+id = "EPIC-013"
+title = "Interface Liste et Gestion des Transactions"
+priority = "Critique"
+businessValue = "Très Haute"
+phase = "MVP"
+
+description = """
+Créer l'interface complète de gestion des transactions avec liste, recherche, filtres,
+et formulaires de saisie.
+"""
+
+objectives = [
+  "Créer la page de liste des transactions",
+  "Implémenter la recherche full-text",
+  "Créer les filtres (date, compte, montant, tags)",
+  "Créer le formulaire de saisie de transaction",
+  "Implémenter l'auto-équilibrage des transactions",
+  "Créer la vue détaillée d'une transaction",
+  "Permettre l'édition et la suppression"
+]
+
+acceptanceCriteria = [
+  "Les transactions sont paginées (50 par page)",
+  "La recherche fonctionne sur description, payee, tags",
+  "Les filtres sont cumulables",
+  "Le formulaire guide l'utilisateur pour équilibrer",
+  "L'interface affiche clairement le déséquilibre",
+  "Les transactions peuvent être modifiées/supprimées",
+  "L'interface est responsive"
+]
+
+userStories = [
+  "En tant qu'utilisateur, je veux voir toutes mes transactions",
+  "En tant qu'utilisateur, je veux chercher une transaction",
+  "En tant qu'utilisateur, je veux filtrer par période",
+  "En tant qu'utilisateur, je veux créer une transaction facilement",
+  "En tant qu'utilisateur, je veux être guidé pour équilibrer",
+  "En tant qu'utilisateur, je veux modifier une transaction existante"
+]
+
+dependencies = ["EPIC-001", "EPIC-003", "EPIC-004"]
+estimatedComplexity = "Très Haute"
+
+  [epic.uiComponents]
+  components = [
+    "Liste paginée",
+    "Barre de recherche",
+    "Filtres multiples",
+    "Formulaire de saisie",
+    "Indicateur d'équilibre",
+    "Vue détaillée",
+    "Boutons édition/suppression"
+  ]
+
+  [epic.features]
+  search = "Full-text sur description, payee, tags"
+  filters = ["Date range", "Compte", "Montant min/max", "Tags", "Devise"]
+  pagination = "50 transactions par page"
+
+# =============================================================================
+# EPIC 14 : Interface de Gestion des Devises
+# =============================================================================
+[[epic]]
+id = "EPIC-014"
+title = "Interface de Gestion des Devises"
+priority = "Haute"
+businessValue = "Haute"
+phase = "Phase 2"
+
+description = """
+Créer l'interface de gestion des devises et des taux de change avec historique et mise à jour.
+"""
+
+objectives = [
+  "Créer la page de gestion des devises",
+  "Afficher la liste des devises avec leur statut",
+  "Créer le formulaire d'ajout de devise",
+  "Implémenter la gestion des taux de change",
+  "Afficher l'historique des taux",
+  "Créer l'interface de mise à jour des taux",
+  "Afficher des graphiques d'évolution des taux"
+]
+
+acceptanceCriteria = [
+  "Les devises sont listées avec leur devise par défaut marquée",
+  "Les taux de change peuvent être ajoutés/modifiés",
+  "L'historique des taux est affiché chronologiquement",
+  "Les graphiques montrent l'évolution des taux",
+  "L'interface permet de définir la devise par défaut",
+  "Les devises utilisées ne peuvent pas être supprimées"
+]
+
+userStories = [
+  "En tant qu'utilisateur, je veux voir toutes mes devises",
+  "En tant qu'utilisateur, je veux ajouter une nouvelle devise",
+  "En tant qu'utilisateur, je veux mettre à jour les taux de change",
+  "En tant qu'utilisateur, je veux voir l'historique des taux",
+  "En tant qu'utilisateur, je veux changer ma devise par défaut",
+  "En tant qu'utilisateur, je veux voir l'évolution des taux en graphique"
+]
+
+dependencies = ["EPIC-001", "EPIC-002"]
+estimatedComplexity = "Moyenne"
+
+  [epic.uiComponents]
+  components = [
+    "Liste des devises",
+    "Formulaire ajout devise",
+    "Table historique taux",
+    "Graphique évolution",
+    "Badge 'par défaut'",
+    "Formulaire mise à jour taux"
+  ]
+
+# =============================================================================
+# EPIC 15 : Interface de Gestion des Budgets
+# =============================================================================
+[[epic]]
+id = "EPIC-015"
+title = "Interface de Gestion des Budgets"
+priority = "Haute"
+businessValue = "Haute"
+phase = "Phase 3"
+
+description = """
+Créer l'interface de gestion des budgets avec création, suivi de progression, et alertes.
+"""
+
+objectives = [
+  "Créer la page de vue des budgets",
+  "Afficher la progression de chaque budget",
+  "Créer le formulaire de définition de budget",
+  "Implémenter les barres de progression visuelles",
+  "Afficher les alertes de dépassement",
+  "Créer le graphique budget vs. réel",
+  "Permettre l'édition et suppression de budgets"
+]
+
+acceptanceCriteria = [
+  "Les budgets sont affichés avec leur progression",
+  "Les barres de progression changent de couleur selon les seuils",
+  "Les alertes sont visibles et claires",
+  "Le formulaire permet de définir période et montant",
+  "Le graphique compare budget planifié et dépenses réelles",
+  "Les budgets peuvent être modifiés/supprimés"
+]
+
+userStories = [
+  "En tant qu'utilisateur, je veux créer un budget mensuel",
+  "En tant qu'utilisateur, je veux voir ma progression en temps réel",
+  "En tant qu'utilisateur, je veux être alerté si je dépasse 80%",
+  "En tant qu'utilisateur, je veux comparer budget vs. réel",
+  "En tant qu'utilisateur, je veux modifier un budget existant",
+  "En tant qu'utilisateur, je veux voir tous mes budgets sur une page"
+]
+
+dependencies = ["EPIC-001", "EPIC-003", "EPIC-004", "EPIC-007"]
+estimatedComplexity = "Haute"
+
+  [epic.uiComponents]
+  components = [
+    "Carte budget avec progression",
+    "Barre de progression colorée",
+    "Alertes visuelles",
+    "Formulaire création",
+    "Graphique budget vs. réel",
+    "Boutons édition/suppression"
+  ]
+
+# =============================================================================
+# EPIC 16 : Interface de Gestion des Récurrences
+# =============================================================================
+[[epic]]
+id = "EPIC-016"
+title = "Interface de Gestion des Récurrences"
+priority = "Haute"
+businessValue = "Haute"
+phase = "Phase 3"
+
+description = """
+Créer l'interface de gestion des transactions récurrentes avec activation/désactivation
+et aperçu des prochaines occurrences.
+"""
+
+objectives = [
+  "Créer la page de gestion des récurrences",
+  "Afficher la liste des récurrences avec statut",
+  "Créer le formulaire de création de récurrence",
+  "Implémenter le toggle activation/désactivation",
+  "Afficher les prochaines occurrences",
+  "Créer le système de génération manuelle",
+  "Permettre l'édition du template"
+]
+
+acceptanceCriteria = [
+  "Les récurrences sont listées avec leur statut (actif/inactif)",
+  "Le formulaire permet de définir la fréquence",
+  "Les prochaines 5 occurrences sont affichées",
+  "L'activation/désactivation est immédiate",
+  "Le template peut être édité",
+  "Les récurrences peuvent être supprimées"
+]
+
+userStories = [
+  "En tant qu'utilisateur, je veux créer une récurrence pour mon salaire",
+  "En tant qu'utilisateur, je veux voir quand sera la prochaine occurrence",
+  "En tant qu'utilisateur, je veux désactiver temporairement une récurrence",
+  "En tant qu'utilisateur, je veux modifier le montant d'une récurrence",
+  "En tant qu'utilisateur, je veux générer manuellement une occurrence",
+  "En tant qu'utilisateur, je veux supprimer une récurrence obsolète"
+]
+
+dependencies = ["EPIC-001", "EPIC-003", "EPIC-004", "EPIC-008"]
+estimatedComplexity = "Haute"
+
+  [epic.uiComponents]
+  components = [
+    "Liste des récurrences",
+    "Badge statut (actif/inactif)",
+    "Formulaire création",
+    "Toggle activation",
+    "Liste prochaines occurrences",
+    "Éditeur de template"
+  ]
+
+# =============================================================================
+# EPIC 17 : Interface Paramètres et Configuration
+# =============================================================================
+[[epic]]
+id = "EPIC-017"
+title = "Interface Paramètres et Configuration"
+priority = "Moyenne"
+businessValue = "Moyenne"
+phase = "MVP"
+
+description = """
+Créer l'interface de paramétrage de l'application avec préférences utilisateur,
+gestion du fichier, et configuration.
+"""
+
+objectives = [
+  "Créer la page de paramètres",
+  "Implémenter la sélection de devise de référence",
+  "Créer les préférences d'affichage",
+  "Implémenter la gestion du fichier TOML",
+  "Créer l'interface de backup/restore",
+  "Implémenter le mode strict/permissif",
+  "Créer la section À propos"
+]
+
+acceptanceCriteria = [
+  "La devise de référence peut être changée",
+  "Les préférences sont sauvegardées localement",
+  "Le chemin du fichier TOML peut être modifié",
+  "Les backups peuvent être créés manuellement",
+  "Le mode de validation peut être choisi",
+  "La version de l'application est affichée"
+]
+
+userStories = [
+  "En tant qu'utilisateur, je veux changer ma devise de référence",
+  "En tant qu'utilisateur, je veux personnaliser l'interface",
+  "En tant qu'utilisateur, je veux sauvegarder manuellement",
+  "En tant qu'utilisateur, je veux créer un backup",
+  "En tant qu'utilisateur, je veux choisir le mode de validation",
+  "En tant qu'utilisateur, je veux voir la version de l'app"
+]
+
+dependencies = ["EPIC-001", "EPIC-002"]
+estimatedComplexity = "Moyenne"
+
+  [epic.settings]
+  sections = [
+    "Général (devise, langue)",
+    "Affichage (thème, format date)",
+    "Fichier (chemin, auto-save)",
+    "Validation (mode strict/permissif)",
+    "Backup (auto, manuel)",
+    "À propos (version, licence)"
+  ]
+
+# =============================================================================
+# EPIC 18 : Recherche et Filtres Avancés
+# =============================================================================
+[[epic]]
+id = "EPIC-018"
+title = "Recherche et Filtres Avancés"
+priority = "Moyenne"
+businessValue = "Moyenne"
+phase = "Phase 4"
+
+description = """
+Implémenter un système de recherche et de filtres avancés pour retrouver rapidement
+des transactions, comptes et autres entités.
+"""
+
+objectives = [
+  "Créer la barre de recherche globale",
+  "Implémenter la recherche full-text",
+  "Créer les filtres combinables",
+  "Implémenter les recherches sauvegardées",
+  "Créer l'autocomplétion",
+  "Implémenter la recherche par montant",
+  "Créer les filtres de date flexibles"
+]
+
+acceptanceCriteria = [
+  "La recherche s'effectue en < 100ms",
+  "Les résultats sont pertinents et triés",
+  "Les filtres peuvent être combinés",
+  "Les recherches fréquentes peuvent être sauvegardées",
+  "L'autocomplétion suggère des valeurs",
+  "La recherche par plage de montants fonctionne"
+]
+
+userStories = [
+  "En tant qu'utilisateur, je veux chercher une transaction rapidement",
+  "En tant qu'utilisateur, je veux filtrer par plusieurs critères",
+  "En tant qu'utilisateur, je veux sauvegarder mes recherches fréquentes",
+  "En tant qu'utilisateur, je veux l'autocomplétion sur les tags",
+  "En tant qu'utilisateur, je veux chercher par plage de montants",
+  "En tant qu'utilisateur, je veux des filtres de date flexibles"
+]
+
+dependencies = ["EPIC-001", "EPIC-003", "EPIC-004"]
+estimatedComplexity = "Haute"
+
+  [epic.features]
+  searchTypes = ["Full-text", "Par montant", "Par date", "Par compte", "Par tag"]
+  savedSearches = "Recherches fréquentes sauvegardables"
+  autocomplete = "Sur description, payee, tags, comptes"
+
+# =============================================================================
+# EPIC 19 : Réconciliation Bancaire
+# =============================================================================
+[[epic]]
+id = "EPIC-019"
+title = "Réconciliation Bancaire"
+priority = "Basse"
+businessValue = "Moyenne"
+phase = "Phase 4"
+
+description = """
+Implémenter la fonctionnalité de réconciliation bancaire permettant de vérifier que
+les transactions enregistrées correspondent aux relevés bancaires.
+"""
+
+objectives = [
+  "Créer l'interface de réconciliation",
+  "Implémenter le matching automatique de transactions",
+  "Créer le système de marquage réconcilié/non réconcilié",
+  "Implémenter la détection d'écarts",
+  "Créer le rapport de réconciliation",
+  "Permettre la réconciliation manuelle"
+]
+
+acceptanceCriteria = [
+  "Les transactions peuvent être marquées comme réconciliées",
+  "Le matching automatique détecte les correspondances",
+  "Les écarts sont affichés clairement",
+  "Un rapport de réconciliation peut être généré",
+  "Le solde réconcilié est affiché",
+  "La réconciliation manuelle est possible"
+]
+
+userStories = [
+  "En tant qu'utilisateur, je veux réconcilier mon compte bancaire",
+  "En tant qu'utilisateur, je veux voir les transactions non réconciliées",
+  "En tant qu'utilisateur, je veux détecter les écarts automatiquement",
+  "En tant qu'utilisateur, je veux générer un rapport de réconciliation",
+  "En tant qu'utilisateur, je veux marquer des transactions comme réconciliées",
+  "En tant qu'utilisateur, je veux voir le solde réconcilié vs. solde réel"
+]
+
+dependencies = ["EPIC-001", "EPIC-003", "EPIC-004", "EPIC-011"]
+estimatedComplexity = "Très Haute"
+
+  [epic.features]
+  autoMatching = "Matching par date, montant et description"
+  status = ["Réconcilié", "Non réconcilié", "En cours"]
+  report = "Rapport avec écarts et soldes"
+
+# =============================================================================
+# EPIC 20 : Performance et Optimisation
+# =============================================================================
+[[epic]]
+id = "EPIC-020"
+title = "Performance et Optimisation"
+priority = "Haute"
+businessValue = "Haute"
+phase = "Phase 4"
+
+description = """
+Optimiser les performances de l'application pour gérer efficacement de gros volumes
+de données (10 000+ transactions).
+"""
+
+objectives = [
+  "Optimiser le chargement du fichier TOML",
+  "Implémenter le cache des soldes",
+  "Optimiser les calculs d'agrégation",
+  "Créer des index pour les recherches",
+  "Implémenter la virtualisation des listes",
+  "Optimiser le rendu des graphiques",
+  "Implémenter le lazy loading"
+]
+
+acceptanceCriteria = [
+  "Chargement < 1s pour 10 000 transactions",
+  "Calcul des soldes < 100ms",
+  "Les listes scrollent de manière fluide",
+  "Les graphiques s'affichent en < 500ms",
+  "La recherche s'exécute en < 100ms",
+  "L'interface reste responsive"
+]
+
+userStories = [
+  "En tant qu'utilisateur, je veux que l'app charge rapidement",
+  "En tant qu'utilisateur, je veux scroller fluidement les transactions",
+  "En tant qu'utilisateur, je veux des graphiques qui se chargent vite",
+  "En tant qu'utilisateur, je veux une interface réactive",
+  "En tant qu'utilisateur, je veux gérer des milliers de transactions"
+]
+
+dependencies = ["EPIC-001", "EPIC-003", "EPIC-004", "EPIC-010"]
+estimatedComplexity = "Très Haute"
+
+  [epic.targets]
+  loadTime = "< 1s pour 10 000 transactions"
+  balanceCalc = "< 100ms"
+  searchTime = "< 100ms"
+  renderTime = "< 500ms pour graphiques"
+
+  [epic.techniques]
+  optimization = [
+    "Indexation",
+    "Cache des soldes",
+    "Virtualisation des listes",
+    "Lazy loading",
+    "Web Workers pour calculs"
+  ]
+
+# =============================================================================
+# EPIC 21 : Tests et Qualité
+# =============================================================================
+[[epic]]
+id = "EPIC-021"
+title = "Tests et Qualité du Code"
+priority = "Critique"
+businessValue = "Très Haute"
+phase = "Continu"
+
+description = """
+Mettre en place une stratégie de tests complète avec tests unitaires, d'intégration,
+et end-to-end pour garantir la qualité et la fiabilité de l'application.
+"""
+
+objectives = [
+  "Créer les tests unitaires pour toutes les fonctions",
+  "Créer les tests de validation (150+ règles)",
+  "Créer les tests d'intégration",
+  "Créer les tests E2E avec Playwright",
+  "Atteindre 80%+ de couverture de code",
+  "Créer les fixtures de test",
+  "Mettre en place CI/CD"
+]
+
+acceptanceCriteria = [
+  "Couverture de code > 80%",
+  "Toutes les règles de validation sont testées",
+  "Les tests E2E couvrent les flux principaux",
+  "Les tests passent en < 2 minutes",
+  "CI/CD exécute les tests automatiquement",
+  "Les fixtures couvrent tous les cas d'usage"
+]
+
+userStories = [
+  "En tant que développeur, je veux des tests fiables",
+  "En tant que développeur, je veux détecter les régressions",
+  "En tant que développeur, je veux une couverture de code élevée",
+  "En tant qu'équipe, nous voulons du CI/CD",
+  "En tant qu'équipe, nous voulons des tests automatisés"
+]
+
+dependencies = ["Tous les Epics"]
+estimatedComplexity = "Très Haute"
+
+  [epic.testing]
+  types = ["Unitaires", "Intégration", "E2E", "Validation"]
+  tools = ["Vitest", "Playwright", "Testing Library"]
+  coverage = "> 80%"
+  ci = "GitHub Actions"
+
+# =============================================================================
+# EPIC 22 : Documentation Utilisateur
+# =============================================================================
+[[epic]]
+id = "EPIC-022"
+title = "Documentation Utilisateur et Aide"
+priority = "Moyenne"
+businessValue = "Moyenne"
+phase = "Phase 4"
+
+description = """
+Créer une documentation utilisateur complète avec guides, tutoriels, et aide contextuelle
+pour faciliter l'adoption de l'application.
+"""
+
+objectives = [
+  "Créer le guide de démarrage rapide",
+  "Créer les tutoriels par fonctionnalité",
+  "Implémenter l'aide contextuelle dans l'UI",
+  "Créer la FAQ",
+  "Créer des vidéos de démonstration",
+  "Implémenter un système de tips",
+  "Créer un glossaire de termes comptables"
+]
+
+acceptanceCriteria = [
+  "Le guide de démarrage est clair et concis",
+  "Chaque fonctionnalité a un tutoriel",
+  "L'aide contextuelle s'affiche au bon moment",
+  "La FAQ répond aux questions courantes",
+  "Des vidéos démontrent les flux principaux",
+  "Le glossaire explique les termes techniques"
+]
+
+userStories = [
+  "En tant qu'utilisateur, je veux un guide de démarrage",
+  "En tant qu'utilisateur, je veux des tutoriels pas à pas",
+  "En tant qu'utilisateur, je veux de l'aide contextuelle",
+  "En tant qu'utilisateur, je veux comprendre les termes comptables",
+  "En tant qu'utilisateur, je veux des vidéos de démonstration",
+  "En tant qu'utilisateur, je veux une FAQ complète"
+]
+
+dependencies = ["Tous les Epics fonctionnels"]
+estimatedComplexity = "Haute"
+
+  [epic.documentation]
+  types = [
+    "Guide de démarrage",
+    "Tutoriels fonctionnalité",
+    "Aide contextuelle",
+    "FAQ",
+    "Vidéos",
+    "Glossaire"
+  ]
+
+# =============================================================================
+# RÉSUMÉ DES EPICS
+# =============================================================================
+
+[summary]
+totalEpics = 22
+
+  [summary.byPhase]
+  mvp = ["EPIC-001", "EPIC-002", "EPIC-003", "EPIC-004", "EPIC-006", "EPIC-009", "EPIC-012", "EPIC-013", "EPIC-017"]
+  phase2 = ["EPIC-005", "EPIC-014"]
+  phase3 = ["EPIC-007", "EPIC-008", "EPIC-010", "EPIC-015", "EPIC-016"]
+  phase4 = ["EPIC-011", "EPIC-018", "EPIC-019", "EPIC-020", "EPIC-022"]
+  continuous = ["EPIC-021"]
+
+  [summary.byPriority]
+  critique = ["EPIC-001", "EPIC-002", "EPIC-003", "EPIC-004", "EPIC-006", "EPIC-012", "EPIC-013", "EPIC-021"]
+  haute = ["EPIC-005", "EPIC-007", "EPIC-008", "EPIC-009", "EPIC-010", "EPIC-014", "EPIC-015", "EPIC-016", "EPIC-020"]
+  moyenne = ["EPIC-011", "EPIC-017", "EPIC-018", "EPIC-022"]
+  basse = ["EPIC-019"]
+
+  [summary.coverage]
+  description = "Ces 22 Epics couvrent 100% des fonctionnalités documentées"
+  features = [
+    "Stockage et Parser TOML",
+    "Gestion multi-devises",
+    "Gestion des comptes hiérarchiques",
+    "Transactions simples et multi-devises",
+    "Validation et intégrité (150+ règles)",
+    "Budgets et suivi",
+    "Transactions récurrentes",
+    "Dashboard et rapports",
+    "Import/Export",
+    "Interfaces utilisateur complètes",
+    "Recherche avancée",
+    "Réconciliation bancaire",
+    "Performance et optimisation",
+    "Tests et qualité",
+    "Documentation utilisateur"
+  ]
+
+  [summary.estimatedEffort]
+  mvp = "6-8 mois"
+  phase2 = "2-3 mois"
+  phase3 = "3-4 mois"
+  phase4 = "3-4 mois"
+  total = "14-19 mois"
+  note = "Estimation pour une équipe de 2-3 développeurs full-stack"
