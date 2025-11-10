@@ -211,6 +211,8 @@ function validateCurrencies(currencies, metadata = null) {
  * @returns {Array} Liste des erreurs
  */
 function validateAccounts(accounts) {
+	// Pour une validation complète, utiliser accountValidator.js
+	// Ici on fait une validation de base pour la structure du fichier
 	const errors = [];
 
 	if (!Array.isArray(accounts)) {
@@ -225,6 +227,26 @@ function validateAccounts(accounts) {
 				severity: ValidationSeverity.ERROR,
 				message: `Compte #${index + 1} : Le nom est obligatoire.`,
 				suggestion: 'Ajoutez un nom de compte non vide.'
+			});
+		}
+
+		// Validation basique de l'ID
+		if (!account.id) {
+			errors.push({
+				code: 'V-ACC-001',
+				severity: ValidationSeverity.ERROR,
+				message: `Compte #${index + 1} : L'ID est obligatoire.`,
+				suggestion: 'Ajoutez un ID au format acc_XXX.'
+			});
+		}
+
+		// Validation basique du type
+		if (!account.type) {
+			errors.push({
+				code: 'V-ACC-005',
+				severity: ValidationSeverity.ERROR,
+				message: `Compte #${index + 1} : Le type est obligatoire.`,
+				suggestion: 'Ajoutez un type (Assets, Liabilities, Income, Expenses, Equity).'
 			});
 		}
 	});
