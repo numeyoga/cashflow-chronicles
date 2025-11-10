@@ -114,11 +114,11 @@
 						<span class="icon">💱</span>
 						<span class="link-text">Gérer les devises</span>
 					</a>
-					<!-- Futures pages -->
-					<div class="quick-link disabled">
+					<a href="/accounts" class="quick-link">
 						<span class="icon">🏦</span>
 						<span class="link-text">Gérer les comptes</span>
-					</div>
+					</a>
+					<!-- Futures pages -->
 					<div class="quick-link disabled">
 						<span class="icon">📝</span>
 						<span class="link-text">Transactions</span>
