@@ -2,15 +2,24 @@
 	/**
 	 * Formulaire d'ajout/édition de taux de change
 	 * Implémente US-002-02 : Enregistrer un taux de change historique
+	 * Implémente US-002-06 : Mettre à jour un taux de change existant
 	 */
-	import { addExchangeRate } from '$lib/stores/currencyStore.js';
+	import { addExchangeRate, updateExchangeRate } from '$lib/stores/currencyStore.js';
 
-	let { currency, onSuccess = () => {}, onCancel = () => {} } = $props();
+	let {
+		currency,
+		mode = 'add',
+		exchangeRate = null,
+		onSuccess = () => {},
+		onCancel = () => {}
+	} = $props();
+
+	const isEditMode = mode === 'edit' && exchangeRate !== null;
 
 	let form = $state({
-		date: new Date().toISOString().split('T')[0],
-		rate: '',
-		source: 'manuel'
+		date: isEditMode ? exchangeRate.date : new Date().toISOString().split('T')[0],
+		rate: isEditMode ? exchangeRate.rate.toString() : '',
+		source: isEditMode ? exchangeRate.source || 'manuel' : 'manuel'
 	});
 
 	let errors = $state({});
@@ -22,28 +31,43 @@
 		event.preventDefault();
 		errors = {};
 
-		const result = addExchangeRate(currency.code, {
-			...form,
-			rate: parseFloat(form.rate)
-		});
+		let result;
+
+		if (isEditMode) {
+			// Mode édition
+			result = updateExchangeRate(currency.code, exchangeRate.date, {
+				rate: parseFloat(form.rate),
+				source: form.source
+			});
+		} else {
+			// Mode ajout
+			result = addExchangeRate(currency.code, {
+				...form,
+				rate: parseFloat(form.rate)
+			});
+		}
 
 		if (!result.success) {
 			// Mapper les erreurs par champ
-			result.errors.forEach(error => {
-				if (error.field) {
-					errors[error.field] = error.message;
-				} else {
-					errors.general = error.message;
-				}
-			});
+			if (result.errors) {
+				result.errors.forEach(error => {
+					if (error.field) {
+						errors[error.field] = error.message;
+					} else {
+						errors.general = error.message;
+					}
+				});
+			}
 		} else {
-			// Réinitialiser le formulaire
-			form = {
-				date: new Date().toISOString().split('T')[0],
-				rate: '',
-				source: 'manuel'
-			};
-			onSuccess(result.rate);
+			// Réinitialiser le formulaire en mode ajout
+			if (!isEditMode) {
+				form = {
+					date: new Date().toISOString().split('T')[0],
+					rate: '',
+					source: 'manuel'
+				};
+			}
+			onSuccess(isEditMode ? { ...exchangeRate, ...form, rate: parseFloat(form.rate) } : result.rate);
 		}
 	}
 
@@ -62,7 +86,9 @@
 </script>
 
 <div class="exchange-rate-form">
-	<h3>Ajouter un taux de change pour {currency.code}</h3>
+	<h3>
+		{isEditMode ? 'Modifier le taux de change' : `Ajouter un taux de change pour ${currency.code}`}
+	</h3>
 
 	{#if errors.general}
 		<div class="alert alert-error">
@@ -80,6 +106,7 @@
 				id="date"
 				bind:value={form.date}
 				class:error={errors.date}
+				disabled={isEditMode}
 				required
 			/>
 			{#if errors.date}
@@ -125,7 +152,9 @@
 		</div>
 
 		<div class="form-actions">
-			<button type="submit" class="btn btn-primary">Ajouter</button>
+			<button type="submit" class="btn btn-primary">
+				{isEditMode ? 'Enregistrer' : 'Ajouter'}
+			</button>
 			<button type="button" class="btn btn-secondary" onclick={handleCancel}>Annuler</button>
 		</div>
 	</form>

@@ -134,10 +134,60 @@ export function updateCurrency(code, updates) {
 }
 
 /**
+ * Vérifie si une devise est utilisée dans les comptes
+ *
+ * @param {string} code - Code de la devise
+ * @returns {Object} { used: boolean, count: number }
+ */
+function isCurrencyUsedInAccounts(code) {
+	let usedCount = 0;
+	const unsubscribe = dataStore.subscribe(state => {
+		if (state.data && state.data.account) {
+			usedCount = state.data.account.filter(a => a.currency === code).length;
+		}
+	});
+	unsubscribe();
+
+	return {
+		used: usedCount > 0,
+		count: usedCount
+	};
+}
+
+/**
+ * Vérifie si une devise est utilisée dans les transactions
+ *
+ * @param {string} code - Code de la devise
+ * @returns {Object} { used: boolean, count: number }
+ */
+function isCurrencyUsedInTransactions(code) {
+	let usedCount = 0;
+	const unsubscribe = dataStore.subscribe(state => {
+		if (state.data && state.data.transaction) {
+			state.data.transaction.forEach(tx => {
+				if (tx.posting) {
+					tx.posting.forEach(p => {
+						if (p.currency === code) {
+							usedCount++;
+						}
+					});
+				}
+			});
+		}
+	});
+	unsubscribe();
+
+	return {
+		used: usedCount > 0,
+		count: usedCount
+	};
+}
+
+/**
  * Supprime une devise
  *
  * @param {string} code - Code de la devise à supprimer
- * @returns {Object} Résultat { success, error }
+ * @returns {Object} Résultat { success, error, details }
  */
 export function deleteCurrency(code) {
 	let currentCurrencies = [];
@@ -152,6 +202,32 @@ export function deleteCurrency(code) {
 		return {
 			success: false,
 			error: 'Impossible de supprimer la devise par défaut.'
+		};
+	}
+
+	// Vérifier si utilisée dans les comptes
+	const accountUsage = isCurrencyUsedInAccounts(code);
+	if (accountUsage.used) {
+		return {
+			success: false,
+			error: `Impossible de supprimer la devise ${code}. Elle est utilisée dans ${accountUsage.count} compte(s).`,
+			details: {
+				type: 'accounts',
+				count: accountUsage.count
+			}
+		};
+	}
+
+	// Vérifier si utilisée dans les transactions
+	const transactionUsage = isCurrencyUsedInTransactions(code);
+	if (transactionUsage.used) {
+		return {
+			success: false,
+			error: `Impossible de supprimer la devise ${code}. Elle est utilisée dans ${transactionUsage.count} écriture(s) de transaction.`,
+			details: {
+				type: 'transactions',
+				count: transactionUsage.count
+			}
 		};
 	}
 
@@ -279,13 +355,69 @@ export function updateExchangeRate(currencyCode, date, updates) {
 }
 
 /**
+ * Vérifie si un taux de change est utilisé dans des transactions
+ *
+ * @param {string} currencyCode - Code de la devise
+ * @param {string} date - Date du taux
+ * @returns {Object} { used: boolean, count: number, transactions: Array }
+ */
+function isExchangeRateUsed(currencyCode, date) {
+	let usedCount = 0;
+	let transactionIds = [];
+
+	const unsubscribe = dataStore.subscribe(state => {
+		if (state.data && state.data.transaction) {
+			state.data.transaction.forEach(tx => {
+				if (tx.posting) {
+					const hasRate = tx.posting.some(p => {
+						// Vérifier si ce posting utilise cette devise et a un taux de change
+						if (p.currency === currencyCode && p.exchangeRate) {
+							// Comparer les dates (convertir en string pour comparaison)
+							const rateDate = p.exchangeRate.date || tx.date;
+							return rateDate.toString() === date.toString();
+						}
+						return false;
+					});
+
+					if (hasRate) {
+						usedCount++;
+						transactionIds.push(tx.id || tx.description);
+					}
+				}
+			});
+		}
+	});
+	unsubscribe();
+
+	return {
+		used: usedCount > 0,
+		count: usedCount,
+		transactions: transactionIds
+	};
+}
+
+/**
  * Supprime un taux de change
  *
  * @param {string} currencyCode - Code de la devise
  * @param {string} date - Date du taux à supprimer
- * @returns {Object} Résultat { success, error }
+ * @returns {Object} Résultat { success, error, details }
  */
 export function deleteExchangeRate(currencyCode, date) {
+	// Vérifier si le taux est utilisé dans des transactions
+	const usage = isExchangeRateUsed(currencyCode, date);
+	if (usage.used) {
+		return {
+			success: false,
+			error: `Impossible de supprimer ce taux de change. Il est utilisé dans ${usage.count} transaction(s).`,
+			details: {
+				type: 'transactions',
+				count: usage.count,
+				transactions: usage.transactions
+			}
+		};
+	}
+
 	dataStore.updateData(data => {
 		if (!data.currency) {
 			return data;
@@ -344,4 +476,92 @@ export function getExchangeRate(currencyCode, date) {
 		});
 
 	return applicableRates.length > 0 ? applicableRates[0].rate : null;
+}
+
+/**
+ * Exporte les devises au format CSV
+ *
+ * @returns {string} Contenu CSV
+ */
+export function exportCurrenciesCSV() {
+	let currentCurrencies = [];
+	const unsubscribe = currencies.subscribe(value => {
+		currentCurrencies = value;
+	});
+	unsubscribe();
+
+	// En-têtes
+	const headers = ['Code', 'Nom', 'Symbole', 'Décimales', 'Par défaut'];
+	let csv = headers.join(',') + '\n';
+
+	// Données
+	currentCurrencies.forEach(currency => {
+		const row = [
+			currency.code,
+			`"${currency.name}"`,
+			`"${currency.symbol}"`,
+			currency.decimalPlaces,
+			currency.isDefault ? 'Oui' : 'Non'
+		];
+		csv += row.join(',') + '\n';
+	});
+
+	return csv;
+}
+
+/**
+ * Exporte tous les taux de change au format CSV
+ *
+ * @returns {string} Contenu CSV
+ */
+export function exportExchangeRatesCSV() {
+	let currentCurrencies = [];
+	const unsubscribe = currencies.subscribe(value => {
+		currentCurrencies = value;
+	});
+	unsubscribe();
+
+	// En-têtes
+	const headers = ['Code Devise', 'Nom Devise', 'Date', 'Taux', 'Source'];
+	let csv = headers.join(',') + '\n';
+
+	// Données
+	currentCurrencies.forEach(currency => {
+		if (currency.exchangeRate && currency.exchangeRate.length > 0) {
+			currency.exchangeRate.forEach(rate => {
+				const row = [
+					currency.code,
+					`"${currency.name}"`,
+					rate.date,
+					rate.rate,
+					rate.source ? `"${rate.source}"` : ''
+				];
+				csv += row.join(',') + '\n';
+			});
+		}
+	});
+
+	return csv;
+}
+
+/**
+ * Télécharge un fichier CSV
+ *
+ * @param {string} content - Contenu CSV
+ * @param {string} filename - Nom du fichier
+ */
+export function downloadCSV(content, filename) {
+	const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+	const link = document.createElement('a');
+	const url = URL.createObjectURL(blob);
+
+	link.setAttribute('href', url);
+	link.setAttribute('download', filename);
+	link.style.visibility = 'hidden';
+
+	document.body.appendChild(link);
+	link.click();
+	document.body.removeChild(link);
+
+	URL.revokeObjectURL(url);
 }

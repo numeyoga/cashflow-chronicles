@@ -5,11 +5,14 @@
 	 */
 	import { currencies, deleteCurrency, deleteExchangeRate } from '$lib/stores/currencyStore.js';
 	import ExchangeRateForm from './ExchangeRateForm.svelte';
+	import CurrencyForm from './CurrencyForm.svelte';
 
 	let { onEdit = () => {} } = $props();
 
 	let expandedCurrency = $state(null);
 	let showRateForm = $state(null);
+	let editingCurrency = $state(null);
+	let editingRate = $state(null);
 
 	/**
 	 * Toggle l'expansion d'une devise
@@ -36,6 +39,31 @@
 	 */
 	function handleRateAdded() {
 		showRateForm = null;
+		editingRate = null;
+	}
+
+	/**
+	 * Ouvre le formulaire d'édition pour un taux
+	 */
+	function handleEditRate(currency, rate) {
+		editingRate = { currency, rate };
+		showRateForm = null;
+	}
+
+	/**
+	 * Ouvre le formulaire d'édition pour une devise
+	 */
+	function handleEdit(currency) {
+		editingCurrency = currency;
+		expandedCurrency = null;
+		showRateForm = null;
+	}
+
+	/**
+	 * Callback après édition réussie
+	 */
+	function handleEditSuccess() {
+		editingCurrency = null;
 	}
 
 	/**
@@ -79,6 +107,17 @@
 <div class="currency-list">
 	<h2>Devises configurées</h2>
 
+	{#if editingCurrency}
+		<div class="edit-form-container">
+			<CurrencyForm
+				mode="edit"
+				currency={editingCurrency}
+				onSuccess={handleEditSuccess}
+				onCancel={() => (editingCurrency = null)}
+			/>
+		</div>
+	{/if}
+
 	{#if $currencies.length === 0}
 		<div class="empty-state">
 			<p>Aucune devise configurée.</p>
@@ -104,6 +143,16 @@
 							</p>
 						</div>
 						<div class="currency-actions">
+							<button
+								class="btn-icon btn-edit"
+								onclick={(e) => {
+									e.stopPropagation();
+									handleEdit(currency);
+								}}
+								title="Modifier"
+							>
+								✏️
+							</button>
 							{#if !currency.isDefault}
 								<button
 									class="btn-icon btn-delete"
@@ -147,6 +196,18 @@
 									</div>
 								{/if}
 
+								{#if editingRate && editingRate.currency.code === currency.code}
+									<div class="rate-form-container">
+										<ExchangeRateForm
+											currency={editingRate.currency}
+											mode="edit"
+											exchangeRate={editingRate.rate}
+											onSuccess={handleRateAdded}
+											onCancel={() => (editingRate = null)}
+										/>
+									</div>
+								{/if}
+
 								{#if currency.isDefault}
 									<p class="info-message">
 										La devise par défaut ne peut pas avoir de taux de change.
@@ -160,7 +221,7 @@
 												<th>Date</th>
 												<th>Taux</th>
 												<th>Source</th>
-												<th>Actions</th>
+												<th style="width: 100px;">Actions</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -170,6 +231,13 @@
 													<td>{formatRate(rate.rate)}</td>
 													<td>{rate.source || 'N/A'}</td>
 													<td>
+														<button
+															class="btn-icon btn-edit-small"
+															onclick={() => handleEditRate(currency, rate)}
+															title="Modifier"
+														>
+															✏️
+														</button>
 														<button
 															class="btn-icon btn-delete-small"
 															onclick={() => handleDeleteRate(currency.code, rate.date)}
@@ -208,6 +276,10 @@
 		text-align: center;
 		padding: 3rem 1rem;
 		color: #888;
+	}
+
+	.edit-form-container {
+		margin-bottom: 2rem;
 	}
 
 	.currencies {
@@ -356,7 +428,8 @@
 		background-color: #f8f9fa;
 	}
 
-	.btn-delete-small {
+	.btn-delete-small,
+	.btn-edit-small {
 		background: none;
 		border: none;
 		cursor: pointer;
@@ -366,7 +439,8 @@
 		transition: opacity 0.2s;
 	}
 
-	.btn-delete-small:hover {
+	.btn-delete-small:hover,
+	.btn-edit-small:hover {
 		opacity: 1;
 	}
 

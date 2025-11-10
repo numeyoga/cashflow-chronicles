@@ -2,19 +2,27 @@
 	/**
 	 * Formulaire d'ajout/édition de devise
 	 * Implémente US-002-01 : Ajouter une nouvelle devise
+	 * Implémente US-002-03 : Modifier une devise existante
 	 */
-	import { addCurrency } from '$lib/stores/currencyStore.js';
+	import { addCurrency, updateCurrency } from '$lib/stores/currencyStore.js';
 	import { currencies } from '$lib/stores/currencyStore.js';
 	import { ISO_4217_CURRENCIES, searchCurrency } from '$lib/domain/models.js';
 
-	let { onSuccess = () => {}, onCancel = () => {} } = $props();
+	let {
+		mode = 'add',
+		currency = null,
+		onSuccess = () => {},
+		onCancel = () => {}
+	} = $props();
+
+	const isEditMode = mode === 'edit' && currency !== null;
 
 	let form = $state({
-		code: '',
-		name: '',
-		symbol: '',
-		decimalPlaces: 2,
-		isDefault: false
+		code: isEditMode ? currency.code : '',
+		name: isEditMode ? currency.name : '',
+		symbol: isEditMode ? currency.symbol : '',
+		decimalPlaces: isEditMode ? currency.decimalPlaces : 2,
+		isDefault: isEditMode ? currency.isDefault : false
 	});
 
 	let errors = $state({});
@@ -53,25 +61,42 @@
 		event.preventDefault();
 		errors = {};
 
-		const result = addCurrency(form);
+		let result;
+
+		if (isEditMode) {
+			// Mode édition
+			result = updateCurrency(currency.code, {
+				name: form.name,
+				symbol: form.symbol,
+				decimalPlaces: form.decimalPlaces,
+				isDefault: form.isDefault
+			});
+		} else {
+			// Mode ajout
+			result = addCurrency(form);
+		}
 
 		if (!result.success) {
 			// Mapper les erreurs par champ
-			result.errors.forEach(error => {
-				if (error.field) {
-					errors[error.field] = error.message;
-				}
-			});
+			if (result.errors) {
+				result.errors.forEach(error => {
+					if (error.field) {
+						errors[error.field] = error.message;
+					}
+				});
+			}
 		} else {
-			// Réinitialiser le formulaire
-			form = {
-				code: '',
-				name: '',
-				symbol: '',
-				decimalPlaces: 2,
-				isDefault: false
-			};
-			onSuccess(result.currency);
+			// Réinitialiser le formulaire en mode ajout
+			if (!isEditMode) {
+				form = {
+					code: '',
+					name: '',
+					symbol: '',
+					decimalPlaces: 2,
+					isDefault: false
+				};
+			}
+			onSuccess(isEditMode ? { ...currency, ...form } : result.currency);
 		}
 	}
 
@@ -92,7 +117,7 @@
 </script>
 
 <div class="currency-form">
-	<h2>Ajouter une devise</h2>
+	<h2>{isEditMode ? 'Modifier la devise' : 'Ajouter une devise'}</h2>
 
 	<form onsubmit={handleSubmit}>
 		<div class="form-group">
@@ -107,6 +132,7 @@
 				placeholder="EUR"
 				maxlength="3"
 				class:error={errors.code}
+				disabled={isEditMode}
 				required
 			/>
 			{#if errors.code}
@@ -190,7 +216,9 @@
 		</div>
 
 		<div class="form-actions">
-			<button type="submit" class="btn btn-primary">Ajouter</button>
+			<button type="submit" class="btn btn-primary">
+				{isEditMode ? 'Enregistrer' : 'Ajouter'}
+			</button>
 			<button type="button" class="btn btn-secondary" onclick={handleCancel}>Annuler</button>
 		</div>
 	</form>
