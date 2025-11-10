@@ -34,6 +34,9 @@
 					<a href="/accounts" class="nav-link" class:active={currentPath === '/accounts'}>
 						🏦 Comptes
 					</a>
+					<a href="/transactions" class="nav-link" class:active={currentPath === '/transactions'}>
+						💸 Transactions
+					</a>
 				</div>
 			</div>
 		</nav>

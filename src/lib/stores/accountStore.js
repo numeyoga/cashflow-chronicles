@@ -428,14 +428,20 @@ export function getAccountByName(name) {
 
 /**
  * Calcule le solde d'un compte
- * Note : Pour le MVP, on retourne 0. Le calcul réel sera implémenté avec EPIC-004 (Transactions)
  *
  * @param {string} id - ID du compte
  * @returns {number} Solde du compte
  */
 export function getAccountBalance(id) {
-	// TODO: Implémenter le calcul réel avec les transactions (EPIC-004)
-	return 0;
+	// Import dynamique pour éviter les dépendances circulaires
+	// La fonction est implémentée dans transactionStore.js
+	try {
+		const { calculateAccountBalance } = require('./transactionStore.js');
+		return calculateAccountBalance(id);
+	} catch {
+		// Si transactionStore n'est pas disponible, retourner 0
+		return 0;
+	}
 }
 
 /**
