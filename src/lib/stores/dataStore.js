@@ -6,7 +6,7 @@
  * Store Svelte centralisé pour gérer l'état de l'application avec auto-save
  */
 
-import { writable, derived } from 'svelte/stores';
+import { writable, derived } from 'svelte/store';
 import { saveToFile } from '../infrastructure/fileStorage.js';
 import { validateTOMLStructure } from '../domain/validator.js';
 
