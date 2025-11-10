@@ -84,7 +84,7 @@ export function validateTOMLStructure(data) {
 
 	// Valider les devises
 	if (data.currency) {
-		const currencyErrors = validateCurrencies(data.currency);
+		const currencyErrors = validateCurrencies(data.currency, data.metadata);
 		errors.push(...currencyErrors);
 	}
 
@@ -163,9 +163,13 @@ function validateMetadata(metadata) {
  * Valide les devises
  *
  * @param {Array} currencies - Liste des devises
+ * @param {Object} metadata - Métadonnées du fichier
  * @returns {Array} Liste des erreurs
  */
-function validateCurrencies(currencies) {
+function validateCurrencies(currencies, metadata = null) {
+	// Utiliser le module de validation complet des devises
+	// Import dynamique pour éviter les dépendances circulaires
+	// La validation complète sera effectuée par currencyValidator.js
 	const errors = [];
 
 	if (!Array.isArray(currencies)) {
