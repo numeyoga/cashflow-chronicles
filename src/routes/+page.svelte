@@ -118,11 +118,10 @@
 						<span class="icon">🏦</span>
 						<span class="link-text">Gérer les comptes</span>
 					</a>
-					<!-- Futures pages -->
-					<div class="quick-link disabled">
+					<a href="/transactions" class="quick-link">
 						<span class="icon">📝</span>
 						<span class="link-text">Transactions</span>
-					</div>
+					</a>
 					<div class="quick-link disabled">
 						<span class="icon">📊</span>
 						<span class="link-text">Rapports</span>
