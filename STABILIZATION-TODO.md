@@ -2,9 +2,9 @@
 
 **Créé le :** 2025-11-10
 **Mis à jour le :** 2025-11-11
-**Statut :** 22 tâches complétées / 31 tâches identifiées
-**Progression :** 🟩🟩🟩🟩🟩🟩🟩⬜⬜⬜ 71%
-**Estimation restante :** ~9-15 heures (1-2 jours)
+**Statut :** 23 tâches complétées / 31 tâches identifiées
+**Progression :** 🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜ 74%
+**Estimation restante :** ~8-14 heures (1-2 jours)
 
 ---
 
@@ -154,6 +154,63 @@
 **Prochaines étapes recommandées :**
 1. Tests ExchangeRateForm (Task 20) - 1-2 heures
 2. Documentation TESTING-STRATEGY.md (Task 26) - 1 heure
+3. Vérification UI complète (Task 24) - 0.5 heure
+
+---
+
+### Résumé des accomplissements - Session 6 (Task 20)
+- ✅ **12 tests unitaires ExchangeRateForm** créés (100% passent)
+- ✅ **Tests Composants Svelte TERMINÉS** (4/4 complété)
+- ✅ **Dépasse l'objectif de 8 tests** (150%)
+
+**Branche :** `claude/stabilization-todo-tasks-011CV2mSeeATUbzbMbDeAy4o`
+
+**Fichiers créés (Session 6) :**
+- `src/lib/components/currencies/__tests__/ExchangeRateForm.test.js` - 12 tests (100% passent ✓)
+
+**Tests créés par fonctionnalité :**
+- **Mode Add** (6 tests) :
+  - Rendering & titre (1 test) ✓
+  - Valeurs par défaut (1 test) ✓
+  - Date enabled (1 test) ✓
+  - Form submission avec addExchangeRate (1 test) ✓
+  - Reset formulaire après succès (1 test) ✓
+  - Validation erreurs (1 test) ✓
+
+- **Mode Edit** (3 tests) :
+  - Affichage données existantes (1 test) ✓
+  - Date disabled (1 test) ✓
+  - updateExchangeRate submission (1 test) ✓
+
+- **Annulation** (1 test) :
+  - onCancel callback (1 test) ✓
+
+- **Helpers & UI** (2 tests) :
+  - Texte d'aide avec code devise (1 test) ✓
+  - Source optionnelle (1 test) ✓
+
+**Statistiques :**
+- 12 tests ExchangeRateForm créés
+- 12/12 tests passent (100% success rate)
+- ~320 lignes de code de tests ajoutées
+- Dépasse l'objectif de 8 tests (150%)
+
+**Points forts :**
+- 100% de tests passants (12/12) ✓
+- Couverture complète modes add/edit
+- Tests de validation du formulaire
+- Composant simple mais bien testé
+
+**🎯 TOUS LES TESTS COMPOSANTS SVELTE TERMINÉS:**
+- Task 17: CurrencyForm/List - 36 tests (100%)
+- Task 18: AccountForm/List - 39 tests (100%)
+- Task 19: TransactionForm/List - 39 tests (95%)
+- Task 20: ExchangeRateForm - 12 tests (100%)
+- **Total: 126 tests composants Svelte, 123 passent (98%)**
+
+**Prochaines étapes recommandées :**
+1. Documentation TESTING-STRATEGY.md (Task 26) - 1 heure
+2. Documentation tests dans README.md (Task 27) - 0.5 heure
 3. Vérification UI complète (Task 24) - 0.5 heure
 
 ---
@@ -574,13 +631,13 @@
 
 ---
 
-#### ⏳ Task 20 : Créer tests Svelte pour ExchangeRateForm
+#### ✅ Task 20 : Créer tests Svelte pour ExchangeRateForm
 **Estimation :** 1-2 heures
-**Statut :** ⏳ À faire
+**Statut :** ✅ **COMPLÉTÉ** - 12 tests (100% passent)
 
 **Critères d'acceptation :**
-- [ ] Au moins 8 tests
-- [ ] Tous les tests passent
+- [x] Au moins 8 tests → 12 tests créés (150%)
+- [x] Tous les tests passent
 
 ---
 
@@ -726,10 +783,10 @@ coverage: {
 | Priorité | Nombre de Tâches | Complétées | Restantes | Progression | Estimation Restante |
 |----------|------------------|------------|-----------|-------------|---------------------|
 | 🔴 CRITIQUE | 12 | 12 ✅ | 0 | 100% | 0 heures |
-| 🟠 HAUTE | 11 | 6 ✅ | 5 | 55% | 5-9 heures |
+| 🟠 HAUTE | 11 | 7 ✅ | 4 | 64% | 4-8 heures |
 | 🟡 MOYENNE | 5 | 3 ✅ | 2 | 60% | 2.5-3 heures |
 | 🟢 BASSE | 3 | 0 | 3 | 0% | 6-8 heures |
-| **TOTAL** | **31** | **22 (71%)** | **9** | **71%** | **13.5-20 heures** |
+| **TOTAL** | **31** | **23 (74%)** | **8** | **74%** | **12.5-19 heures** |
 
 ### Par Catégorie
 
@@ -739,7 +796,7 @@ coverage: {
 | Tests Unitaires Validators | 3 | 3 ✅ | 0 heures |
 | Tests E2E User Stories | 5 | 5 ✅ | 0 heures |
 | Tests Stores | 4 | 4 ✅ | 0 heures |
-| Tests Composants | 4 | 3 ✅ | 1-2 heures |
+| Tests Composants | 4 | 4 ✅ | 0 heures |
 | Configuration | 2 | 2 ✅ | 0 heures |
 | Documentation | 3 | 0 | 2.5-3 heures |
 | UX/UI | 3 | 1 ✅ | 0.5-1 heure |
