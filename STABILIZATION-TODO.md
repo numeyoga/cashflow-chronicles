@@ -2,9 +2,9 @@
 
 **Créé le :** 2025-11-10
 **Mis à jour le :** 2025-11-11
-**Statut :** 24 tâches complétées / 31 tâches identifiées
-**Progression :** 🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜ 77%
-**Estimation restante :** ~7-13 heures (1 jour)
+**Statut :** 25 tâches complétées / 31 tâches identifiées
+**Progression :** 🟩🟩🟩🟩🟩🟩🟩🟩⬜⬜ 81%
+**Estimation restante :** ~6.5-12.5 heures (1 jour)
 
 ---
 
@@ -261,6 +261,45 @@
 1. Documentation README.md (Task 27) - 0.5 heure
 2. Lier tests aux User Stories (Task 28) - 1 heure
 3. Vérification UI complète (Task 24) - 0.5 heure
+
+---
+
+### Résumé des accomplissements - Session 7 (Tasks 26-27)
+- ✅ **Documentation TESTING-STRATEGY.md** créée (Task 26)
+- ✅ **Section Testing ajoutée au README.md** (Task 27)
+- ✅ **Documentation tests complète et accessible**
+
+**Branche :** `claude/stabilization-todo-tasks-011CV2mSeeATUbzbMbDeAy4o`
+
+**Fichiers modifiés (Session 7) :**
+- `docs/TESTING-STRATEGY.md` - Documentation complète (~550 lignes)
+- `README.md` - Nouvelle section "Tests" avec statistiques et commandes
+
+**Task 26 - TESTING-STRATEGY.md :**
+- 10 sections détaillées couvrant toute la stratégie
+- Test pyramid avec 481 tests distribués
+- Conventions et best practices avec exemples de code
+- Matrice de traçabilité (Validation Rules ↔ Tests ↔ User Stories)
+- Documentation des outils et configuration
+- Known issues et future improvements
+
+**Task 27 - README.md Testing Section :**
+- Tableau de statistiques des tests (481 tests, 82% coverage)
+- Commandes npm complètes (test, test:watch, test:ui, test:coverage, test:e2e)
+- Instructions pour voir le rapport de couverture
+- Lien vers TESTING-STRATEGY.md pour documentation complète
+- Liste des sujets couverts dans la documentation
+
+**Impact :**
+- Nouveau développeur peut démarrer les tests en <5 minutes
+- Documentation accessible depuis le README principal
+- Guide de référence complet dans TESTING-STRATEGY.md
+- Statistiques de tests visibles et actualisées
+
+**Prochaines étapes recommandées :**
+1. Lier tests aux User Stories (Task 28) - 1 heure
+2. Vérification UI complète (Task 24) - 0.5 heure
+3. Ajouter indicateurs visuels (Task 25) - 0.5 heure
 
 ---
 
@@ -802,10 +841,17 @@ coverage: {
 
 ---
 
-#### ⏳ Task 27 : Documenter comment exécuter les tests dans README.md
+#### ✅ Task 27 : Documenter comment exécuter les tests dans README.md
 **Fichier :** `README.md`
 **Estimation :** 0.5 heure
-**Statut :** ⏳ À faire
+**Statut :** ✅ **COMPLÉTÉ**
+
+**Critères d'acceptation :**
+- [x] Section "Tests" ajoutée au README.md
+- [x] Tableau de statistiques des tests (481 tests, couverture)
+- [x] Commandes npm documentées (test, test:watch, test:ui, test:coverage, test:e2e)
+- [x] Instructions pour voir le rapport de couverture
+- [x] Lien vers TESTING-STRATEGY.md pour documentation détaillée
 
 ---
 
@@ -843,9 +889,9 @@ coverage: {
 |----------|------------------|------------|-----------|-------------|---------------------|
 | 🔴 CRITIQUE | 12 | 12 ✅ | 0 | 100% | 0 heures |
 | 🟠 HAUTE | 11 | 7 ✅ | 4 | 64% | 4-8 heures |
-| 🟡 MOYENNE | 5 | 4 ✅ | 1 | 80% | 1.5-2 heures |
+| 🟡 MOYENNE | 5 | 5 ✅ | 0 | 100% | 0 heures |
 | 🟢 BASSE | 3 | 0 | 3 | 0% | 6-8 heures |
-| **TOTAL** | **31** | **24 (77%)** | **7** | **77%** | **11.5-18 heures** |
+| **TOTAL** | **31** | **25 (81%)** | **6** | **81%** | **10-16 heures** |
 
 ### Par Catégorie
 
@@ -857,7 +903,7 @@ coverage: {
 | Tests Stores | 4 | 4 ✅ | 0 heures |
 | Tests Composants | 4 | 4 ✅ | 0 heures |
 | Configuration | 2 | 2 ✅ | 0 heures |
-| Documentation | 3 | 1 ✅ | 1.5-2 heures |
+| Documentation | 3 | 2 ✅ | 1 heure |
 | UX/UI | 3 | 1 ✅ | 0.5-1 heure |
 | Performance | 3 | 0 | 6-8 heures |
 

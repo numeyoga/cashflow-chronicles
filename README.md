@@ -97,6 +97,70 @@ npm run preview
 - **Tests** : Vitest (unit), Playwright (e2e)
 - **Code quality** : ESLint, Prettier
 
+## 🧪 Tests
+
+Le projet dispose d'une suite de tests complète avec **481 tests** couvrant toutes les couches de l'application.
+
+### Statistiques de tests
+
+| Type | Framework | Tests | Couverture | Temps |
+|------|-----------|-------|------------|-------|
+| **Unit - Validators** | Vitest | 186 | 100% | ~2-3s |
+| **Unit - Components** | Vitest | 126 | 98% | ~5-10s |
+| **Integration - Stores** | Vitest | 117 | 82% | ~3-5s |
+| **E2E - User Stories** | Playwright | 52 | N/A | ~60-90s |
+| **Total** | | **481** | **82%** | **~2 min** |
+
+### Exécuter les tests
+
+```sh
+# Tous les tests unitaires et d'intégration
+npm test
+
+# Tests en mode watch (développement)
+npm run test:watch
+
+# Tests avec interface graphique
+npm run test:ui
+
+# Tests avec rapport de couverture
+npm run test:coverage
+
+# Tests E2E (nécessite le serveur de dev)
+npm run test:e2e
+
+# Tests E2E avec interface Playwright
+npm run test:e2e:ui
+
+# Tous les tests (unit + E2E)
+npm run test:all
+```
+
+### Voir le rapport de couverture
+
+Après avoir exécuté `npm run test:coverage`, ouvrez le rapport HTML :
+
+```sh
+# Linux/Mac
+open coverage/index.html
+
+# Windows
+start coverage/index.html
+```
+
+### Documentation complète
+
+Pour plus d'informations sur notre stratégie de tests, conventions et best practices, consultez :
+
+👉 **[Documentation complète des tests](./docs/TESTING-STRATEGY.md)**
+
+Cette documentation couvre :
+- Test pyramid et distribution des tests
+- Outils et configuration (Vitest, Playwright, @testing-library)
+- Conventions et best practices avec exemples
+- Matrice de traçabilité (Validation Rules ↔ Tests ↔ User Stories)
+- Known issues et roadmap
+
 ## 📖 Concepts clés
 
 ### Types de comptes
