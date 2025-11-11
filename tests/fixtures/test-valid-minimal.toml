@@ -1,0 +1,44 @@
+version = "1.0.0"
+
+[metadata]
+created = "2025-01-01T00:00:00Z"
+lastModified = "2025-01-01T00:00:00Z"
+defaultCurrency = "CHF"
+owner = "Test User"
+description = "Fichier de test minimal"
+
+[[currency]]
+code = "CHF"
+name = "Swiss Franc"
+symbol = "CHF"
+decimalPlaces = 2
+isDefault = true
+
+[[account]]
+id = "acc_001"
+name = "Assets:Bank:CHF"
+type = "Assets"
+currency = "CHF"
+opened = "2025-01-01"
+
+[[account]]
+id = "acc_002"
+name = "Expenses:Test"
+type = "Expenses"
+currency = "CHF"
+opened = "2025-01-01"
+
+[[transaction]]
+id = "txn_001"
+date = "2025-01-15"
+description = "Test transaction"
+
+  [[transaction.posting]]
+  accountId = "acc_001"
+  amount = 100.00
+  currency = "CHF"
+
+  [[transaction.posting]]
+  accountId = "acc_002"
+  amount = -100.00
+  currency = "CHF"
