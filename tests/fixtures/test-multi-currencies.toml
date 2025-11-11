@@ -1,0 +1,49 @@
+version = "1.0.0"
+
+[metadata]
+created = "2025-01-01T00:00:00Z"
+lastModified = "2025-01-01T00:00:00Z"
+defaultCurrency = "CHF"
+owner = "Test User"
+
+[[currency]]
+code = "CHF"
+name = "Swiss Franc"
+symbol = "CHF"
+decimalPlaces = 2
+isDefault = true
+
+[[currency]]
+code = "EUR"
+name = "Euro"
+symbol = "€"
+decimalPlaces = 2
+isDefault = false
+
+[[currency]]
+code = "USD"
+name = "US Dollar"
+symbol = "$"
+decimalPlaces = 2
+isDefault = false
+
+[[account]]
+id = "acc_001"
+name = "Assets:Bank:CHF:PostFinance"
+type = "Assets"
+currency = "CHF"
+opened = "2025-01-01"
+
+[[account]]
+id = "acc_002"
+name = "Assets:Bank:EUR:Revolut"
+type = "Assets"
+currency = "EUR"
+opened = "2025-01-01"
+
+[[account]]
+id = "acc_003"
+name = "Expenses:Food:Groceries"
+type = "Expenses"
+currency = "CHF"
+opened = "2025-01-01"

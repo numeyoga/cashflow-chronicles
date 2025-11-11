@@ -1,0 +1,14 @@
+# Fichier TOML invalide - pas de version
+
+[metadata]
+created = "2025-01-01T00:00:00Z"
+lastModified = "2025-01-01T00:00:00Z"
+defaultCurrency = "CHF"
+owner = "Test User"
+
+[[currency]]
+code = "CHF"
+name = "Swiss Franc"
+symbol = "CHF"
+decimalPlaces = 2
+isDefault = true
