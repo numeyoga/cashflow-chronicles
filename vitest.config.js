@@ -3,10 +3,13 @@ import { sveltekit } from '@sveltejs/kit/vite';
 
 export default defineConfig({
 	plugins: [sveltekit()],
+	resolve: {
+		conditions: ['browser']
+	},
 	test: {
 		globals: true,
 		environment: 'jsdom',
-		setupFiles: [],
+		setupFiles: ['./src/lib/test-utils/setup.js'],
 		// Exclure les tests E2E Playwright
 		exclude: [
 			'node_modules/**',
