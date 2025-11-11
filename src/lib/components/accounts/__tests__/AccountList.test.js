@@ -36,6 +36,12 @@ vi.mock('$lib/stores/currencyStore.js', () => ({
 	}
 }));
 
+// Helper function to find type header by label
+function findTypeHeader(typeLabel) {
+	const typeHeaders = document.querySelectorAll('.type-header');
+	return Array.from(typeHeaders).find(header => header.textContent.includes(typeLabel));
+}
+
 describe('AccountList - Rendu de base', () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
@@ -252,8 +258,9 @@ describe('AccountList - Filtrage', () => {
 		render(AccountList);
 
 		// La logique de filtrage est dans le composant
-		// Ce test vérifie que le message existe dans le template
-		expect(screen.queryByText(/Aucun compte ne correspond aux critères de recherche/i)).not.toBeVisible();
+		// Par défaut, avec un compte actif, le message ne devrait pas être visible
+		const emptyMessage = screen.queryByText(/Aucun compte ne correspond aux critères de recherche/i);
+		expect(emptyMessage).toBeNull();
 	});
 });
 
@@ -316,7 +323,7 @@ describe('AccountList - Interactions', () => {
 		render(AccountList);
 
 		// Expandre le type
-		const typeHeader = screen.getByText(/Actifs/).closest('.type-header');
+		const typeHeader = findTypeHeader('Actifs');
 		await user.click(typeHeader);
 
 		// Vérifier que le bouton d'édition est présent
@@ -344,7 +351,7 @@ describe('AccountList - Interactions', () => {
 
 		render(AccountList);
 
-		const typeHeader = screen.getByText(/Actifs/).closest('.type-header');
+		const typeHeader = findTypeHeader('Actifs');
 		await user.click(typeHeader);
 
 		expect(screen.getByTitle('Clôturer')).toBeInTheDocument();
@@ -375,7 +382,7 @@ describe('AccountList - Interactions', () => {
 		const statusFilter = screen.getByLabelText(/Statut :/i);
 		await userEvent.setup().selectOptions(statusFilter, 'closed');
 
-		const typeHeader = screen.getByText(/Actifs/).closest('.type-header');
+		const typeHeader = findTypeHeader('Actifs');
 		await userEvent.setup().click(typeHeader);
 
 		expect(screen.getByTitle('Réouvrir')).toBeInTheDocument();
@@ -404,7 +411,7 @@ describe('AccountList - Interactions', () => {
 
 		render(AccountList);
 
-		const typeHeader = screen.getByText(/Actifs/).closest('.type-header');
+		const typeHeader = findTypeHeader('Actifs');
 		await user.click(typeHeader);
 
 		const closeButton = screen.getByTitle('Clôturer');
@@ -438,7 +445,7 @@ describe('AccountList - Interactions', () => {
 
 		render(AccountList);
 
-		const typeHeader = screen.getByText(/Actifs/).closest('.type-header');
+		const typeHeader = findTypeHeader('Actifs');
 		await user.click(typeHeader);
 
 		const closeButton = screen.getByTitle('Clôturer');
@@ -471,7 +478,7 @@ describe('AccountList - Interactions', () => {
 
 		render(AccountList);
 
-		const typeHeader = screen.getByText(/Actifs/).closest('.type-header');
+		const typeHeader = findTypeHeader('Actifs');
 		await user.click(typeHeader);
 
 		const deleteButton = screen.getByTitle('Supprimer');
@@ -507,7 +514,7 @@ describe('AccountList - Interactions', () => {
 
 		render(AccountList);
 
-		const typeHeader = screen.getByText(/Actifs/).closest('.type-header');
+		const typeHeader = findTypeHeader('Actifs');
 		await user.click(typeHeader);
 
 		const deleteButton = screen.getByTitle('Supprimer');
@@ -546,7 +553,7 @@ describe('AccountList - Affichage des détails', () => {
 		const statusFilter = screen.getByLabelText(/Statut :/i);
 		await user.selectOptions(statusFilter, 'all');
 
-		const typeHeader = screen.getByText(/Actifs/).closest('.type-header');
+		const typeHeader = findTypeHeader('Actifs');
 		await user.click(typeHeader);
 
 		expect(screen.getByText('Clôturé')).toBeInTheDocument();
@@ -572,11 +579,14 @@ describe('AccountList - Affichage des détails', () => {
 
 		render(AccountList);
 
-		const typeHeader = screen.getByText(/Actifs/).closest('.type-header');
+		const typeHeader = findTypeHeader('Actifs');
 		await user.click(typeHeader);
 
-		expect(screen.getByText(/CHF/)).toBeInTheDocument();
-		expect(screen.getByText(/Ouvert le/)).toBeInTheDocument();
+		// Vérifier dans la zone des détails du compte
+		const accountDetails = document.querySelector('.account-details');
+		expect(accountDetails).toBeInTheDocument();
+		expect(accountDetails.textContent).toContain('CHF');
+		expect(accountDetails.textContent).toContain('Ouvert le');
 	});
 
 	it('devrait afficher la description si présente', async () => {
@@ -600,7 +610,7 @@ describe('AccountList - Affichage des détails', () => {
 
 		render(AccountList);
 
-		const typeHeader = screen.getByText(/Actifs/).closest('.type-header');
+		const typeHeader = findTypeHeader('Actifs');
 		await user.click(typeHeader);
 
 		expect(screen.getByText('Mon compte principal')).toBeInTheDocument();
@@ -630,7 +640,7 @@ describe('AccountList - Affichage des détails', () => {
 		const statusFilter = screen.getByLabelText(/Statut :/i);
 		await user.selectOptions(statusFilter, 'all');
 
-		const typeHeader = screen.getByText(/Actifs/).closest('.type-header');
+		const typeHeader = findTypeHeader('Actifs');
 		await user.click(typeHeader);
 
 		expect(screen.getByText(/Clôturé le/)).toBeInTheDocument();
