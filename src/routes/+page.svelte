@@ -122,9 +122,12 @@
 						<span class="icon">📝</span>
 						<span class="link-text">Transactions</span>
 					</a>
-					<div class="quick-link disabled">
+					<div class="quick-link disabled" title="Fonctionnalité en développement">
 						<span class="icon">📊</span>
-						<span class="link-text">Rapports</span>
+						<span class="link-text">
+							Rapports
+							<span class="badge-dev">Bientôt</span>
+						</span>
 					</div>
 				</div>
 			</div>
@@ -313,6 +316,23 @@
 
 	.link-text {
 		font-weight: 500;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.25rem;
+	}
+
+	.badge-dev {
+		display: inline-block;
+		background-color: #f39c12;
+		color: white;
+		font-size: 0.7rem;
+		padding: 0.15rem 0.5rem;
+		border-radius: 12px;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+		margin-top: 0.25rem;
 	}
 
 	.getting-started {

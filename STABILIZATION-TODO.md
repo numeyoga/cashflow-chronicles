@@ -2,9 +2,9 @@
 
 **Créé le :** 2025-11-10
 **Mis à jour le :** 2025-11-11
-**Statut :** 27 tâches complétées / 31 tâches identifiées
-**Progression :** 🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜ 87%
-**Estimation restante :** ~4.5-10.5 heures (1 jour)
+**Statut :** 28 tâches complétées / 31 tâches identifiées
+**Progression :** 🟩🟩🟩🟩🟩🟩🟩🟩🟩⬜ 90%
+**Estimation restante :** ~4-10 heures (1 jour)
 
 ---
 
@@ -925,9 +925,22 @@ coverage: {
 
 ---
 
-#### ⏳ Task 25 : Ajouter indicateurs visuels pour fonctionnalités en développement
+#### ✅ Task 25 : Ajouter indicateurs visuels pour fonctionnalités en développement
+**Fichiers :** `src/routes/+page.svelte`
 **Estimation :** 0.5 heure
-**Statut :** ⏳ À faire
+**Statut :** ✅ **COMPLÉTÉ**
+
+**Modifications effectuées :**
+- [x] Ajout d'un badge "Bientôt" sur le bouton Rapports (ligne 129)
+- [x] Ajout d'un tooltip "Fonctionnalité en développement" (ligne 125)
+- [x] Style CSS pour `.badge-dev` avec couleur orange distinctive (lignes 325-336)
+- [x] Adaptation de `.link-text` en flexbox pour supporter le badge (lignes 317-323)
+
+**Résultat :**
+- Badge orange "BIENTÔT" visible sur les fonctionnalités en développement
+- Tooltip explicatif au survol
+- Design cohérent avec le reste de l'interface
+- Utilisateurs informés visuellement des fonctionnalités à venir
 
 ---
 
@@ -1012,9 +1025,9 @@ coverage: {
 |----------|------------------|------------|-----------|-------------|---------------------|
 | 🔴 CRITIQUE | 12 | 12 ✅ | 0 | 100% | 0 heures |
 | 🟠 HAUTE | 11 | 7 ✅ | 4 | 64% | 4-8 heures |
-| 🟡 MOYENNE | 5 | 4 ✅ | 1 | 80% | 0.5 heures |
+| 🟡 MOYENNE | 5 | 5 ✅ | 0 | 100% | 0 heures |
 | 🟢 BASSE | 3 | 0 | 3 | 0% | 6-8 heures |
-| **TOTAL** | **31** | **27 (87%)** | **4** | **87%** | **10.5-16.5 heures** |
+| **TOTAL** | **31** | **28 (90%)** | **3** | **90%** | **10-16 heures** |
 
 ### Par Catégorie
 
@@ -1027,7 +1040,7 @@ coverage: {
 | Tests Composants | 4 | 4 ✅ | 0 heures |
 | Configuration | 2 | 2 ✅ | 0 heures |
 | Documentation | 3 | 3 ✅ | 0 heures |
-| UX/UI | 3 | 2 ✅ | 0.5 heures |
+| UX/UI | 3 | 3 ✅ | 0 heures |
 | Performance | 3 | 0 | 6-8 heures |
 
 ### Ordre de Priorité Recommandé pour les tâches restantes
