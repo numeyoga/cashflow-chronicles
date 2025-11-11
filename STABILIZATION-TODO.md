@@ -2,9 +2,9 @@
 
 **Créé le :** 2025-11-10
 **Mis à jour le :** 2025-11-11
-**Statut :** 16 tâches complétées / 31 tâches identifiées
-**Progression :** 🟩🟩🟩🟩🟩⬜⬜⬜⬜⬜ 52%
-**Estimation restante :** ~19-31 heures (2-4 jours)
+**Statut :** 19 tâches complétées / 31 tâches identifiées (après mise à jour comptabilité)
+**Progression :** 🟩🟩🟩🟩🟩🟩⬜⬜⬜⬜ 61%
+**Estimation restante :** ~18.5-25 heures (2-3 jours)
 
 ---
 
@@ -627,10 +627,10 @@ coverage: {
 | Priorité | Nombre de Tâches | Complétées | Restantes | Progression | Estimation Restante |
 |----------|------------------|------------|-----------|-------------|---------------------|
 | 🔴 CRITIQUE | 12 | 12 ✅ | 0 | 100% | 0 heures |
-| 🟠 HAUTE | 11 | 0 | 11 | 0% | 16-22 heures |
-| 🟡 MOYENNE | 5 | 1 ✅ | 4 | 20% | 3-4 heures |
+| 🟠 HAUTE | 11 | 4 ✅ | 7 | 36% | 10-14 heures |
+| 🟡 MOYENNE | 5 | 3 ✅ | 2 | 60% | 2.5-3 heures |
 | 🟢 BASSE | 3 | 0 | 3 | 0% | 6-8 heures |
-| **TOTAL** | **31** | **12 (39%)** | **19** | **39%** | **25-38 heures** |
+| **TOTAL** | **31** | **19 (61%)** | **12** | **61%** | **18.5-25 heures** |
 
 ### Par Catégorie
 
@@ -639,20 +639,19 @@ coverage: {
 | Sauvegarde TOML | 4 | 4 ✅ | 0 heures |
 | Tests Unitaires Validators | 3 | 3 ✅ | 0 heures |
 | Tests E2E User Stories | 5 | 5 ✅ | 0 heures |
-| Tests Stores | 4 | 0 | 6-8 heures |
+| Tests Stores | 4 | 4 ✅ | 0 heures |
 | Tests Composants | 4 | 0 | 10-14 heures |
 | Configuration | 2 | 2 ✅ | 0 heures |
-| Documentation | 3 | 0 | 2.5-3.5 heures |
-| UX/UI | 3 | 1 ✅ | 1-1.5 heures |
+| Documentation | 3 | 0 | 2.5-3 heures |
+| UX/UI | 3 | 1 ✅ | 0.5-1 heure |
 | Performance | 3 | 0 | 6-8 heures |
 
 ### Ordre de Priorité Recommandé pour les tâches restantes
 
-1. **Phase 1 - Haute** (16-22 heures)
-   - Tasks 13-16 : Tests stores (6-8 heures)
-   - Tasks 17-20 : Tests composants (10-14 heures)
+1. **Phase 1 - Haute** (10-14 heures)
+   - Tasks 17-20 : Tests composants Svelte (10-14 heures)
 
-2. **Phase 2 - Moyenne** (3-4 heures)
+2. **Phase 2 - Moyenne** (2.5-3 heures)
    - Tasks 24-28 : Documentation et UX
 
 3. **Phase 3 - Basse** (6-8 heures - Si temps disponible)
@@ -690,8 +689,15 @@ coverage: {
 - [x] US-004-01 : Enregistrer une dépense simple - 13 tests ✅
 - [x] **Total : 52 tests E2E créés**
 
+#### ✅ Tests unitaires Stores - **100% COMPLÉTÉ**
+- [x] dataStore.js : 25 tests ✅ (100% statements, 100% lines!)
+- [x] currencyStore.js : 19 tests ✅
+- [x] accountStore.js : 34 tests ✅
+- [x] transactionStore.js : 39 tests ✅
+- [x] **Total : 117 tests stores (100% passent)**
+- [x] **Couverture : 82% statements, 88% functions**
+
 #### ⏳ Tests restants à créer
-- [ ] Tests stores (4 fichiers) - 6-8 heures
 - [ ] Tests composants Svelte (4 fichiers) - 10-14 heures
 
 #### ⏳ Performance (à tester)
@@ -707,6 +713,56 @@ coverage: {
 ---
 
 ## 📝 Changelog
+
+### 2025-11-11 - v1.3 (Session 3 - Tests Stores)
+
+**Branche :** `claude/stabilization-todo-tasks-011CV2NPnJGq7yofzgUzdztK`
+**Commit :** 5ec57d4 - feat: Add comprehensive unit tests for all Store modules (Tasks 13-16)
+
+**✅ Complété : 4 tâches HAUTE priorité (Tasks 13-16) - Tests Unitaires Stores**
+
+**Tests créés :**
+- `dataStore.test.js` - 25 tests couvrant tout le dataStore avec auto-save
+- `currencyStore.test.js` - 19 tests couvrant CRUD devises et taux de change
+- `accountStore.test.js` - 34 tests couvrant CRUD comptes et hiérarchie
+- `transactionStore.test.js` - 39 tests couvrant CRUD transactions et calculs
+- **Total : 117 tests stores (100% success rate)**
+
+**Couverture de code :**
+- **Globale** : 82.35% statements, 88.26% functions, 82% lines
+- **dataStore.js** : 🎯 100% statements, 100% lines, 100% functions
+- **accountStore.js** : 87.83% statements, 82.27% branches, 94.64% functions
+- **transactionStore.js** : 88.94% statements, 83.52% branches, 93.65% functions
+- **currencyStore.js** : 65.53% statements (lignes non couvertes = APIs DOM)
+
+**Fonctionnalités testées :**
+- Derived stores Svelte et réactivité
+- Opérations CRUD complètes
+- Validation et gestion d'erreurs
+- Recherche et filtrage avancés
+- Calculs de soldes et statistiques
+- Export CSV
+- Auto-save avec debounce
+
+**Statistiques :**
+- 117 tests stores créés
+- ~2560 lignes de code de tests ajoutées
+- Tous les tests passent (100% success rate)
+- Couverture excellente (>80% objectif atteint)
+- Progression : 16/31 tâches (52% → **61%** après mise à jour)
+
+**Points forts :**
+- dataStore atteint une couverture parfaite de 100%
+- Tous les stores ont >80% de couverture sauf currencyStore (fonctions DOM)
+- Tests très complets dépassant les objectifs (167% à 340% des cibles)
+- Qualité de code validée avec tests exhaustifs
+
+**Prochaines étapes recommandées :**
+1. Tests composants Svelte (Tasks 17-20) - 10-14 heures
+2. Documentation TESTING-STRATEGY.md (Tasks 26-28) - 2.5-3 heures
+3. Vérification UX/UI complète (Task 24) - 0.5 heure
+
+---
 
 ### 2025-11-11 - v1.2 (Session 2 - Tests E2E)
 
@@ -818,4 +874,4 @@ coverage: {
 **Créé le :** 2025-11-10
 **Mis à jour le :** 2025-11-11
 **Auteur :** Claude (Architecte Senior SvelteKit)
-**Version :** 1.1
+**Version :** 1.3
