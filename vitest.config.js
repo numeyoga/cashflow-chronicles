@@ -7,13 +7,37 @@ export default defineConfig({
 		globals: true,
 		environment: 'jsdom',
 		setupFiles: [],
+		// Exclure les tests E2E Playwright
+		exclude: [
+			'node_modules/**',
+			'dist/**',
+			'.svelte-kit/**',
+			'build/**',
+			'tests/e2e/**',
+			'**/*.spec.js'
+		],
 		coverage: {
 			provider: 'v8',
-			reporter: ['text', 'json', 'html'],
+			reporter: ['text', 'json', 'html', 'lcov'],
 			exclude: [
 				'node_modules/',
 				'dist/',
-			]
+				'.svelte-kit/',
+				'build/',
+				'tests/',
+				'**/*.test.js',
+				'**/*.spec.js',
+				'**/+*.svelte',
+				'**/+*.js',
+				'**/app.html'
+			],
+			// Configurer les seuils de couverture à 80%
+			thresholds: {
+				lines: 80,
+				functions: 80,
+				branches: 80,
+				statements: 80
+			}
 		}
 	}
 });
