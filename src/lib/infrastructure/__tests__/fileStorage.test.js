@@ -3,12 +3,7 @@
  */
 
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import {
-	serializeToTOML,
-	downloadFile,
-	saveOrDownload,
-	saveFileAs
-} from '../fileStorage.js';
+import { serializeToTOML, downloadFile, saveOrDownload, saveFileAs } from '../fileStorage.js';
 
 describe('fileStorage - Serialize', () => {
 	it('devrait sérialiser les données en TOML', () => {
@@ -175,7 +170,7 @@ describe('fileStorage - SaveFileAs', () => {
 		expect(result.message).toContain('téléchargé');
 	});
 
-	it('devrait gérer l\'annulation par l\'utilisateur', async () => {
+	it("devrait gérer l'annulation par l'utilisateur", async () => {
 		// Simuler la présence de l'API
 		window.showSaveFilePicker = vi.fn(() => {
 			const error = new Error('User cancelled');

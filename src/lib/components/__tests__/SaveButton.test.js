@@ -166,7 +166,7 @@ describe('SaveButton Component', () => {
 		expect(onSaveMock).toHaveBeenCalled();
 	});
 
-	it('devrait appeler onError en cas d\'erreur', async () => {
+	it("devrait appeler onError en cas d'erreur", async () => {
 		fileStorage.saveOrDownload.mockResolvedValue({
 			success: false,
 			error: 'Erreur de sauvegarde'

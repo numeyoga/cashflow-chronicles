@@ -49,7 +49,7 @@ function createDataStore() {
 		const validation = validateTOMLStructure(parsedData);
 
 		if (!validation.valid) {
-			update(state => ({
+			update((state) => ({
 				...state,
 				validationReport: validation,
 				saveMessage: {
@@ -60,7 +60,7 @@ function createDataStore() {
 			return false;
 		}
 
-		update(state => ({
+		update((state) => ({
 			...state,
 			data: parsedData,
 			fileHandle,
@@ -81,7 +81,7 @@ function createDataStore() {
 	 * @param {Function} updateFn - Fonction de mise à jour
 	 */
 	function updateData(updateFn) {
-		update(state => {
+		update((state) => {
 			if (!state.data) return state;
 
 			const newData = updateFn(state.data);
@@ -130,13 +130,13 @@ function createDataStore() {
 		}
 
 		// Indiquer que la sauvegarde est en cours
-		update(s => ({ ...s, isSaving: true }));
+		update((s) => ({ ...s, isSaving: true }));
 
 		try {
 			const result = await saveToFile(state.data, state.fileHandle);
 
 			if (result.success) {
-				update(s => ({
+				update((s) => ({
 					...s,
 					isSaving: false,
 					isModified: false,
@@ -150,11 +150,11 @@ function createDataStore() {
 				// Masquer le message après 3 secondes
 				if (AUTO_SAVE_CONFIG.showNotification) {
 					setTimeout(() => {
-						update(s => ({ ...s, saveMessage: null }));
+						update((s) => ({ ...s, saveMessage: null }));
 					}, AUTO_SAVE_CONFIG.notificationDuration);
 				}
 			} else {
-				update(s => ({
+				update((s) => ({
 					...s,
 					isSaving: false,
 					saveMessage: {
@@ -164,7 +164,7 @@ function createDataStore() {
 				}));
 			}
 		} catch (error) {
-			update(s => ({
+			update((s) => ({
 				...s,
 				isSaving: false,
 				saveMessage: {
@@ -180,7 +180,7 @@ function createDataStore() {
 	 */
 	async function save() {
 		let currentState;
-		const unsubscribe = subscribe(state => {
+		const unsubscribe = subscribe((state) => {
 			currentState = state;
 		});
 		unsubscribe();
@@ -215,7 +215,7 @@ export const dataStore = createDataStore();
 /**
  * Store dérivé pour les statistiques
  */
-export const stats = derived(dataStore, $dataStore => {
+export const stats = derived(dataStore, ($dataStore) => {
 	if (!$dataStore.data) {
 		return {
 			currencies: 0,
@@ -240,14 +240,14 @@ export const stats = derived(dataStore, $dataStore => {
 /**
  * Store dérivé pour l'état de modification
  */
-export const isModified = derived(dataStore, $dataStore => $dataStore.isModified);
+export const isModified = derived(dataStore, ($dataStore) => $dataStore.isModified);
 
 /**
  * Store dérivé pour l'état de sauvegarde
  */
-export const isSaving = derived(dataStore, $dataStore => $dataStore.isSaving);
+export const isSaving = derived(dataStore, ($dataStore) => $dataStore.isSaving);
 
 /**
  * Store dérivé pour le message de sauvegarde
  */
-export const saveMessage = derived(dataStore, $dataStore => $dataStore.saveMessage);
+export const saveMessage = derived(dataStore, ($dataStore) => $dataStore.saveMessage);

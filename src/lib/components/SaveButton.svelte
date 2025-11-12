@@ -26,8 +26,8 @@
 	let message = $state(null);
 	let messageType = $state('success'); // 'success' | 'error' | 'info'
 
-	// Vérifier si File System Access API est disponible
-	const supportsFileSystemAccess = 'showSaveFilePicker' in window;
+	// Vérifier si File System Access API est disponible (vérification SSR-safe)
+	const supportsFileSystemAccess = typeof window !== 'undefined' && 'showSaveFilePicker' in window;
 
 	/**
 	 * Obtient le nom du fichier actuel
@@ -125,7 +125,12 @@
 <div class="save-button-container">
 	<div class="button-group">
 		<!-- Bouton Sauvegarder -->
-		<button class="btn btn-save" onclick={handleSave} disabled={saving || !data} title="Sauvegarder">
+		<button
+			class="btn btn-save"
+			onclick={handleSave}
+			disabled={saving || !data}
+			title="Sauvegarder"
+		>
 			<span class="icon">{saving ? '⏳' : '💾'}</span>
 			{#if showLabel}
 				<span class="label">{saving ? 'Sauvegarde...' : 'Sauvegarder'}</span>

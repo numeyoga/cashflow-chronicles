@@ -60,7 +60,9 @@ describe('FileUpload Component', () => {
 			}
 		});
 
-		const dropZone = screen.getByText(/Glissez-déposez votre fichier TOML ici/i).closest('.drop-zone');
+		const dropZone = screen
+			.getByText(/Glissez-déposez votre fichier TOML ici/i)
+			.closest('.drop-zone');
 
 		// Créer un fichier avec une mauvaise extension
 		const file = new File(['content'], 'test.txt', { type: 'text/plain' });
@@ -98,7 +100,9 @@ describe('FileUpload Component', () => {
 			}
 		});
 
-		const dropZone = screen.getByText(/Glissez-déposez votre fichier TOML ici/i).closest('.drop-zone');
+		const dropZone = screen
+			.getByText(/Glissez-déposez votre fichier TOML ici/i)
+			.closest('.drop-zone');
 
 		// Simuler le drag over
 		await fireEvent.dragOver(dropZone);
@@ -115,7 +119,9 @@ describe('FileUpload Component', () => {
 			}
 		});
 
-		const dropZone = screen.getByText(/Glissez-déposez votre fichier TOML ici/i).closest('.drop-zone');
+		const dropZone = screen
+			.getByText(/Glissez-déposez votre fichier TOML ici/i)
+			.closest('.drop-zone');
 
 		// Simuler le drag over puis drag leave
 		await fireEvent.dragOver(dropZone);

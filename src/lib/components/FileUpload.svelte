@@ -16,8 +16,8 @@
 	let loading = $state(false);
 	let error = $state(null);
 
-	// Vérifier si File System Access API est disponible
-	const supportsFileSystemAccess = 'showOpenFilePicker' in window;
+	// Vérifier si File System Access API est disponible (vérification SSR-safe)
+	const supportsFileSystemAccess = typeof window !== 'undefined' && 'showOpenFilePicker' in window;
 
 	/**
 	 * Ouvre le sélecteur de fichier avec File System Access API si disponible
@@ -143,7 +143,7 @@
 	<div
 		class="drop-zone"
 		class:dragging={isDragging}
-		class:loading={loading}
+		class:loading
 		role="button"
 		tabindex="0"
 		aria-label="Zone de téléchargement de fichier TOML"
@@ -161,9 +161,7 @@
 				<div class="icon">📂</div>
 				<h3>Glissez-déposez votre fichier TOML ici</h3>
 				<p class="hint">ou</p>
-				<button class="btn btn-primary" onclick={openFilePicker}>
-					Parcourir les fichiers
-				</button>
+				<button class="btn btn-primary" onclick={openFilePicker}> Parcourir les fichiers </button>
 				<p class="info">
 					Formats acceptés : .toml
 					{#if supportsFileSystemAccess}
