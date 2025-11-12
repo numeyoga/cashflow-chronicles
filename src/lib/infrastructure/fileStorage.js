@@ -3,9 +3,20 @@
  *
  * Implémente US-001-03 : Sauvegarder les données en fichier TOML
  * Implémente US-001-04 : Créer un backup automatique avant modification
+ *
+ * Utilise IndexedDB pour le stockage persistant (migration depuis localStorage)
  */
 
 import TOML from 'smol-toml';
+import {
+	saveToIndexedDB,
+	getFromIndexedDB,
+	clearFromIndexedDB,
+	saveBackupsToIndexedDB,
+	getBackupsFromIndexedDB,
+	deleteBackupFromIndexedDB,
+	cleanupOldBackupsFromIndexedDB
+} from './indexedDbStorage.js';
 
 /**
  * Sérialise les données en format TOML
@@ -69,8 +80,8 @@ export async function saveToFile(data, fileHandle) {
 		await writable.write(tomlContent);
 		await writable.close();
 
-		// Sauvegarder également dans localStorage pour persistance
-		saveToLocalStorage(data, fileHandle.name);
+		// Sauvegarder également dans IndexedDB pour persistance
+		await saveToIndexedDB(data, fileHandle.name);
 
 		const endTime = performance.now();
 		const saveTime = Math.round(endTime - startTime);
@@ -125,10 +136,8 @@ async function createBackup(fileHandle, currentContent) {
 		const fileName = fileHandle.name;
 		const backupName = fileName.replace('.toml', `.${timestamp}.backup.toml`);
 
-		// Dans un environnement navigateur, on pourrait stocker les backups
-		// dans IndexedDB ou proposer un téléchargement
-		// Pour l'instant, on simule avec localStorage
-		const backups = getBackups();
+		// Stocker les backups dans IndexedDB
+		const backups = await getBackups();
 		backups.push({
 			name: backupName,
 			timestamp: new Date().toISOString(),
@@ -143,7 +152,7 @@ async function createBackup(fileHandle, currentContent) {
 			backups.splice(maxBackups);
 		}
 
-		saveBackups(backups);
+		await saveBackups(backups);
 	} catch (error) {
 		// Si le backup échoue, on log mais on ne bloque pas la sauvegarde
 		console.warn('⚠️ Impossible de créer le backup:', error);
@@ -168,77 +177,94 @@ function formatTimestamp(date) {
 }
 
 /**
- * Sauvegarde le fichier TOML principal dans localStorage
+ * Sauvegarde le fichier TOML principal dans le stockage persistant
+ * (Utilise IndexedDB)
  *
  * @param {Object} data - Données à sauvegarder
  * @param {string} fileName - Nom du fichier
+ * @returns {Promise<Object>} Résultat de la sauvegarde
  */
-export function saveToLocalStorage(data, fileName = 'budget.toml') {
+export async function saveToStorage(data, fileName = 'budget.toml') {
 	try {
-		const tomlContent = serializeToTOML(data);
-		const tomlData = {
-			fileName,
-			content: tomlContent,
-			lastModified: new Date().toISOString(),
-			size: tomlContent.length
-		};
-		localStorage.setItem('cashflow-current-file', JSON.stringify(tomlData));
+		const result = await saveToIndexedDB(data, fileName);
+		return result;
 	} catch (error) {
-		console.error('Erreur lors de la sauvegarde dans localStorage:', error);
+		console.error('Erreur lors de la sauvegarde dans IndexedDB:', error);
 		// Si l'erreur est due à un quota dépassé, nettoyer les anciens backups
 		if (error.name === 'QuotaExceededError') {
-			cleanupOldBackups(5); // Garder seulement 5 backups
+			await cleanupOldBackups(5); // Garder seulement 5 backups
 			try {
-				const tomlContent = serializeToTOML(data);
-				const tomlData = {
-					fileName,
-					content: tomlContent,
-					lastModified: new Date().toISOString(),
-					size: tomlContent.length
-				};
-				localStorage.setItem('cashflow-current-file', JSON.stringify(tomlData));
+				const result = await saveToIndexedDB(data, fileName);
+				return result;
 			} catch (retryError) {
-				console.error('Impossible de sauvegarder dans localStorage même après nettoyage:', retryError);
+				console.error('Impossible de sauvegarder dans IndexedDB même après nettoyage:', retryError);
+				return {
+					success: false,
+					error: retryError.message
+				};
 			}
 		}
+		return {
+			success: false,
+			error: error.message
+		};
 	}
 }
 
+// Alias pour compatibilité ascendante
+export const saveToLocalStorage = saveToStorage;
+
 /**
- * Récupère le fichier TOML principal depuis localStorage
+ * Récupère le fichier TOML principal depuis le stockage persistant
+ * (Utilise IndexedDB)
  *
- * @returns {Object|null} Données du fichier ou null
+ * @returns {Promise<Object|null>} Données du fichier ou null
  */
-export function getFromLocalStorage() {
+export async function getFromStorage() {
 	try {
-		const tomlJSON = localStorage.getItem('cashflow-current-file');
-		return tomlJSON ? JSON.parse(tomlJSON) : null;
+		const result = await getFromIndexedDB();
+		return result;
 	} catch (error) {
-		console.error('Erreur lors de la récupération depuis localStorage:', error);
+		console.error('Erreur lors de la récupération depuis IndexedDB:', error);
 		return null;
 	}
 }
 
+// Alias pour compatibilité ascendante
+export const getFromLocalStorage = getFromStorage;
+
 /**
- * Supprime le fichier TOML principal de localStorage
+ * Supprime le fichier TOML principal du stockage persistant
+ * (Utilise IndexedDB)
+ *
+ * @returns {Promise<Object>} Résultat de la suppression
  */
-export function clearFromLocalStorage() {
+export async function clearFromStorage() {
 	try {
-		localStorage.removeItem('cashflow-current-file');
+		const result = await clearFromIndexedDB();
+		return result;
 	} catch (error) {
-		console.error('Erreur lors de la suppression depuis localStorage:', error);
+		console.error('Erreur lors de la suppression depuis IndexedDB:', error);
+		return {
+			success: false,
+			error: error.message
+		};
 	}
 }
 
+// Alias pour compatibilité ascendante
+export const clearFromLocalStorage = clearFromStorage;
+
 /**
- * Récupère la liste des backups
+ * Récupère la liste des backups depuis le stockage persistant
+ * (Utilise IndexedDB)
  *
- * @returns {Array} Liste des backups
+ * @returns {Promise<Array>} Liste des backups
  */
-export function getBackups() {
+export async function getBackups() {
 	try {
-		const backupsJSON = localStorage.getItem('cashflow-backups');
-		return backupsJSON ? JSON.parse(backupsJSON) : [];
+		const backups = await getBackupsFromIndexedDB();
+		return backups;
 	} catch (error) {
 		console.error('Erreur lors de la récupération des backups:', error);
 		return [];
@@ -246,27 +272,35 @@ export function getBackups() {
 }
 
 /**
- * Sauvegarde la liste des backups
+ * Sauvegarde la liste des backups dans le stockage persistant
+ * (Utilise IndexedDB)
  *
  * @param {Array} backups - Liste des backups
+ * @returns {Promise<Object>} Résultat de la sauvegarde
  */
-function saveBackups(backups) {
+async function saveBackups(backups) {
 	try {
-		localStorage.setItem('cashflow-backups', JSON.stringify(backups));
+		const result = await saveBackupsToIndexedDB(backups);
+		return result;
 	} catch (error) {
 		console.error('Erreur lors de la sauvegarde des backups:', error);
+		return {
+			success: false,
+			error: error.message
+		};
 	}
 }
 
 /**
- * Restaure un backup
+ * Restaure un backup depuis le stockage persistant
+ * (Utilise IndexedDB)
  *
  * @param {string} backupName - Nom du backup à restaurer
- * @returns {Object|null} Contenu du backup ou null
+ * @returns {Promise<Object>} Contenu du backup ou erreur
  */
-export function restoreBackup(backupName) {
-	const backups = getBackups();
-	const backup = backups.find(b => b.name === backupName);
+export async function restoreBackup(backupName) {
+	const backups = await getBackups();
+	const backup = backups.find((b) => b.name === backupName);
 
 	if (backup) {
 		return {
@@ -283,17 +317,16 @@ export function restoreBackup(backupName) {
 }
 
 /**
- * Supprime un backup
+ * Supprime un backup du stockage persistant
+ * (Utilise IndexedDB)
  *
  * @param {string} backupName - Nom du backup à supprimer
- * @returns {boolean} True si supprimé avec succès
+ * @returns {Promise<boolean>} True si supprimé avec succès
  */
-export function deleteBackup(backupName) {
+export async function deleteBackup(backupName) {
 	try {
-		const backups = getBackups();
-		const filteredBackups = backups.filter(b => b.name !== backupName);
-		saveBackups(filteredBackups);
-		return true;
+		const result = await deleteBackupFromIndexedDB(backupName);
+		return result;
 	} catch (error) {
 		console.error('Erreur lors de la suppression du backup:', error);
 		return false;
@@ -301,26 +334,16 @@ export function deleteBackup(backupName) {
 }
 
 /**
- * Nettoie les anciens backups
+ * Nettoie les anciens backups du stockage persistant
+ * (Utilise IndexedDB)
  *
  * @param {number} maxBackups - Nombre maximum de backups à conserver
+ * @returns {Promise<number>} Nombre de backups supprimés
  */
-export function cleanupOldBackups(maxBackups = 10) {
+export async function cleanupOldBackups(maxBackups = 10) {
 	try {
-		const backups = getBackups();
-
-		if (backups.length > maxBackups) {
-			// Trier par date (plus récent en premier)
-			backups.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-			// Garder seulement les N plus récents
-			const keptBackups = backups.slice(0, maxBackups);
-			saveBackups(keptBackups);
-
-			return backups.length - keptBackups.length; // Nombre de backups supprimés
-		}
-
-		return 0;
+		const deletedCount = await cleanupOldBackupsFromIndexedDB(maxBackups);
+		return deletedCount;
 	} catch (error) {
 		console.error('Erreur lors du nettoyage des backups:', error);
 		return 0;
