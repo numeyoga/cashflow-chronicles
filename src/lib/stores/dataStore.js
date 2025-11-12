@@ -158,14 +158,23 @@ function createDataStore() {
 					}, AUTO_SAVE_CONFIG.notificationDuration);
 				}
 			} else {
-				update(s => ({
-					...s,
-					isSaving: false,
-					saveMessage: {
-						type: 'error',
-						text: result.error
-					}
-				}));
+				// Si l'erreur est due à l'absence de fileHandle valide, ne pas afficher de message
+				// (c'est normal lors de l'auto-save sans fichier ouvert)
+				if (result.needsFileHandle) {
+					update(s => ({
+						...s,
+						isSaving: false
+					}));
+				} else {
+					update(s => ({
+						...s,
+						isSaving: false,
+						saveMessage: {
+							type: 'error',
+							text: result.error
+						}
+					}));
+				}
 			}
 		} catch (error) {
 			update(s => ({
