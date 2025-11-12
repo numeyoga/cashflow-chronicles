@@ -8,6 +8,7 @@
 	 */
 
 	import { loadTOMLFile } from '$lib/infrastructure/tomlParser.js';
+	import { browser } from '$app/environment';
 
 	let { onFileLoaded = () => {}, onError = () => {} } = $props();
 
@@ -16,8 +17,8 @@
 	let loading = $state(false);
 	let error = $state(null);
 
-	// Vérifier si File System Access API est disponible
-	const supportsFileSystemAccess = 'showOpenFilePicker' in window;
+	// Vérifier si File System Access API est disponible (uniquement côté client)
+	const supportsFileSystemAccess = browser && 'showOpenFilePicker' in window;
 
 	/**
 	 * Ouvre le sélecteur de fichier avec File System Access API si disponible
