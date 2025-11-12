@@ -7,7 +7,7 @@
  */
 
 import { writable, derived } from 'svelte/store';
-import { saveToFile } from '../infrastructure/fileStorage.js';
+import { saveToFile, saveToLocalStorage } from '../infrastructure/fileStorage.js';
 import { validateTOMLStructure } from '../domain/validator.js';
 
 /**
@@ -59,6 +59,10 @@ function createDataStore() {
 			}));
 			return false;
 		}
+
+		// Sauvegarder dans localStorage (remplace le fichier précédent)
+		const fileName = fileHandle?.name || 'budget.toml';
+		saveToLocalStorage(parsedData, fileName);
 
 		update(state => ({
 			...state,

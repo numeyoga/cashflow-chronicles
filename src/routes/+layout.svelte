@@ -3,17 +3,9 @@
 	import '../app.css';
 	import { dataStore } from '$lib/stores/dataStore.js';
 	import SaveButton from '$lib/components/SaveButton.svelte';
+	import { page } from '$app/stores';
 
 	let { children } = $props();
-
-	// Obtenir l'URL actuelle pour la navigation active
-	let currentPath = $state('');
-
-	$effect(() => {
-		if (typeof window !== 'undefined') {
-			currentPath = window.location.pathname;
-		}
-	});
 
 	/**
 	 * Gère la sauvegarde réussie
@@ -47,16 +39,16 @@
 			<div class="nav-content">
 				<a href="/" class="nav-brand">💰 Cashflow Chronicles</a>
 				<div class="nav-links">
-					<a href="/" class="nav-link" class:active={currentPath === '/'}>
+					<a href="/" class="nav-link" class:active={$page.url.pathname === '/'}>
 						🏠 Accueil
 					</a>
-					<a href="/currencies" class="nav-link" class:active={currentPath === '/currencies'}>
+					<a href="/currencies" class="nav-link" class:active={$page.url.pathname === '/currencies'}>
 						💱 Devises
 					</a>
-					<a href="/accounts" class="nav-link" class:active={currentPath === '/accounts'}>
+					<a href="/accounts" class="nav-link" class:active={$page.url.pathname === '/accounts'}>
 						🏦 Comptes
 					</a>
-					<a href="/transactions" class="nav-link" class:active={currentPath === '/transactions'}>
+					<a href="/transactions" class="nav-link" class:active={$page.url.pathname === '/transactions'}>
 						💸 Transactions
 					</a>
 				</div>

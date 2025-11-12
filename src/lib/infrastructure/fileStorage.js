@@ -49,8 +49,13 @@ export async function saveToFile(data, fileHandle) {
 	try {
 		// Vérifier que fileHandle est valide et a la méthode createWritable
 		if (!fileHandle || typeof fileHandle.createWritable !== 'function') {
-			// Si le fileHandle n'est pas valide, utiliser le fallback (téléchargement)
-			return downloadFile(data);
+			// Si le fileHandle n'est pas valide, retourner un message d'erreur
+			// au lieu de télécharger automatiquement
+			return {
+				success: false,
+				error: 'Aucun fichier sélectionné. Utilisez "Sauvegarder sous..." pour choisir un emplacement.',
+				needsFileHandle: true
+			};
 		}
 
 		// Sérialiser les données
@@ -63,6 +68,9 @@ export async function saveToFile(data, fileHandle) {
 		const writable = await fileHandle.createWritable();
 		await writable.write(tomlContent);
 		await writable.close();
+
+		// Sauvegarder également dans localStorage pour persistance
+		saveToLocalStorage(data, fileHandle.name);
 
 		const endTime = performance.now();
 		const saveTime = Math.round(endTime - startTime);
@@ -157,6 +165,69 @@ function formatTimestamp(date) {
 	const seconds = String(date.getSeconds()).padStart(2, '0');
 
 	return `${year}${month}${day}-${hours}${minutes}${seconds}`;
+}
+
+/**
+ * Sauvegarde le fichier TOML principal dans localStorage
+ *
+ * @param {Object} data - Données à sauvegarder
+ * @param {string} fileName - Nom du fichier
+ */
+export function saveToLocalStorage(data, fileName = 'budget.toml') {
+	try {
+		const tomlContent = serializeToTOML(data);
+		const tomlData = {
+			fileName,
+			content: tomlContent,
+			lastModified: new Date().toISOString(),
+			size: tomlContent.length
+		};
+		localStorage.setItem('cashflow-current-file', JSON.stringify(tomlData));
+	} catch (error) {
+		console.error('Erreur lors de la sauvegarde dans localStorage:', error);
+		// Si l'erreur est due à un quota dépassé, nettoyer les anciens backups
+		if (error.name === 'QuotaExceededError') {
+			cleanupOldBackups(5); // Garder seulement 5 backups
+			try {
+				const tomlContent = serializeToTOML(data);
+				const tomlData = {
+					fileName,
+					content: tomlContent,
+					lastModified: new Date().toISOString(),
+					size: tomlContent.length
+				};
+				localStorage.setItem('cashflow-current-file', JSON.stringify(tomlData));
+			} catch (retryError) {
+				console.error('Impossible de sauvegarder dans localStorage même après nettoyage:', retryError);
+			}
+		}
+	}
+}
+
+/**
+ * Récupère le fichier TOML principal depuis localStorage
+ *
+ * @returns {Object|null} Données du fichier ou null
+ */
+export function getFromLocalStorage() {
+	try {
+		const tomlJSON = localStorage.getItem('cashflow-current-file');
+		return tomlJSON ? JSON.parse(tomlJSON) : null;
+	} catch (error) {
+		console.error('Erreur lors de la récupération depuis localStorage:', error);
+		return null;
+	}
+}
+
+/**
+ * Supprime le fichier TOML principal de localStorage
+ */
+export function clearFromLocalStorage() {
+	try {
+		localStorage.removeItem('cashflow-current-file');
+	} catch (error) {
+		console.error('Erreur lors de la suppression depuis localStorage:', error);
+	}
 }
 
 /**
