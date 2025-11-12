@@ -47,20 +47,22 @@ export async function saveToFile(data, fileHandle) {
 	const startTime = performance.now();
 
 	try {
+		// Vérifier que fileHandle est valide et a la méthode createWritable
+		if (!fileHandle || typeof fileHandle.createWritable !== 'function') {
+			// Si le fileHandle n'est pas valide, utiliser le fallback (téléchargement)
+			return downloadFile(data);
+		}
+
 		// Sérialiser les données
 		const tomlContent = serializeToTOML(data);
 
 		// Créer un backup avant de sauvegarder
-		if (fileHandle) {
-			await createBackup(fileHandle, tomlContent);
-		}
+		await createBackup(fileHandle, tomlContent);
 
 		// Écrire dans le fichier
-		if (fileHandle) {
-			const writable = await fileHandle.createWritable();
-			await writable.write(tomlContent);
-			await writable.close();
-		}
+		const writable = await fileHandle.createWritable();
+		await writable.write(tomlContent);
+		await writable.close();
 
 		const endTime = performance.now();
 		const saveTime = Math.round(endTime - startTime);
