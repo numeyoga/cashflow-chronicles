@@ -4,7 +4,7 @@
 	 * Implémente US-003-01 : Créer un compte bancaire (Assets)
 	 */
 	import { addAccount, updateAccount } from '$lib/stores/accountStore.js';
-	import { currencies } from '$lib/stores/currencyStore.js';
+	import { currencies, defaultCurrency } from '$lib/stores/currencyStore.js';
 	import { AccountTypes } from '$lib/domain/accountValidator.js';
 
 	let {
@@ -22,7 +22,7 @@
 	let form = $state({
 		type: isEditMode ? account.type : 'Assets',
 		name: isEditMode ? account.name : '',
-		currency: isEditMode ? account.currency : '',
+		currency: isEditMode ? account.currency : ($defaultCurrency?.code || ''),
 		opened: isEditMode ? account.opened : today,
 		description: isEditMode ? (account.description || '') : ''
 	});
@@ -245,19 +245,25 @@
 			<label for="currency">
 				Devise <span class="required">*</span>
 			</label>
-			<select
-				id="currency"
-				bind:value={form.currency}
-				class:error={errors.currency}
-				required
-			>
-				<option value="">-- Sélectionnez une devise --</option>
-				{#each $currencies as currency}
-					<option value={currency.code}>
-						{currency.code} - {currency.name} ({currency.symbol})
-					</option>
-				{/each}
-			</select>
+			{#if $currencies.length === 0}
+				<div class="warning-message">
+					⚠️ Aucune devise disponible. Veuillez d'abord <a href="/currencies">créer une devise</a>.
+				</div>
+			{:else}
+				<select
+					id="currency"
+					bind:value={form.currency}
+					class:error={errors.currency}
+					required
+				>
+					<option value="">-- Sélectionnez une devise --</option>
+					{#each $currencies as currency}
+						<option value={currency.code}>
+							{currency.code} - {currency.name} ({currency.symbol})
+						</option>
+					{/each}
+				</select>
+			{/if}
 			{#if errors.currency}
 				<span class="error-message">{errors.currency}</span>
 			{/if}
@@ -368,6 +374,25 @@
 		color: #e74c3c;
 		font-size: 0.875rem;
 		margin-top: 0.25rem;
+	}
+
+	.warning-message {
+		display: block;
+		padding: 0.75rem;
+		background-color: #fff3cd;
+		border: 1px solid #ffc107;
+		border-radius: 4px;
+		color: #856404;
+		font-size: 0.875rem;
+	}
+
+	.warning-message a {
+		color: #0056b3;
+		text-decoration: underline;
+	}
+
+	.warning-message a:hover {
+		color: #003d82;
 	}
 
 	.help-text {
