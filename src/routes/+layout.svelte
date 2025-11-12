@@ -2,6 +2,7 @@
 	import favicon from '$lib/assets/favicon.svg';
 	import '../app.css';
 	import { dataStore } from '$lib/stores/dataStore.js';
+	import SaveButton from '$lib/components/SaveButton.svelte';
 
 	let { children } = $props();
 
@@ -13,6 +14,27 @@
 			currentPath = window.location.pathname;
 		}
 	});
+
+	/**
+	 * Gère la sauvegarde réussie
+	 */
+	function handleSaveSuccess(result) {
+		// Si on a reçu un nouveau fileHandle, mettre à jour le store
+		if (result.fileHandle) {
+			dataStore.updateData((data) => {
+				// Mise à jour du store avec le nouveau handle
+				// Note: le dataStore garde le fileHandle séparément des données
+				return data;
+			});
+		}
+	}
+
+	/**
+	 * Gère les erreurs de sauvegarde
+	 */
+	function handleSaveError(error) {
+		console.error('Erreur de sauvegarde :', error);
+	}
 </script>
 
 <svelte:head>
@@ -37,6 +59,15 @@
 					<a href="/transactions" class="nav-link" class:active={currentPath === '/transactions'}>
 						💸 Transactions
 					</a>
+				</div>
+				<div class="nav-actions">
+					<SaveButton
+						data={$dataStore.data}
+						fileHandle={$dataStore.fileHandle}
+						showLabel={false}
+						onSave={handleSaveSuccess}
+						onError={handleSaveError}
+					/>
 				</div>
 			</div>
 		</nav>
@@ -71,6 +102,12 @@
 		align-items: center;
 		justify-content: space-between;
 		height: 60px;
+		gap: 1rem;
+	}
+
+	.nav-actions {
+		display: flex;
+		align-items: center;
 	}
 
 	.nav-brand {
@@ -111,6 +148,12 @@
 
 	.main-content {
 		flex: 1;
+	}
+
+	@media (max-width: 1024px) {
+		.nav-links {
+			display: none;
+		}
 	}
 
 	@media (max-width: 768px) {

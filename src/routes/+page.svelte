@@ -3,38 +3,20 @@
 	 * Page d'accueil de Cashflow Chronicles
 	 */
 	import { dataStore, stats } from '$lib/stores/dataStore.js';
-	import { loadTOMLFile } from '$lib/infrastructure/tomlParser.js';
-
-	let fileInput;
-	let loading = $state(false);
-	let error = $state(null);
+	import FileUpload from '$lib/components/FileUpload.svelte';
 
 	/**
-	 * Charge un fichier TOML
+	 * Gère le chargement réussi d'un fichier
 	 */
-	async function handleFileSelect() {
-		error = null;
-		const file = fileInput.files[0];
-		if (!file) return;
+	function handleFileLoaded(result, fileHandle) {
+		dataStore.loadData(result.data, fileHandle);
+	}
 
-		loading = true;
-
-		try {
-			const text = await file.text();
-			const result = loadTOMLFile(text);
-
-			if (result.success) {
-				// Créer un handle de fichier simulé pour le store
-				const fileHandle = { name: file.name };
-				dataStore.loadData(result.data, fileHandle);
-			} else {
-				error = result.error;
-			}
-		} catch (err) {
-			error = err.message;
-		} finally {
-			loading = false;
-		}
+	/**
+	 * Gère les erreurs de chargement
+	 */
+	function handleFileError(errorMessage) {
+		console.error('Erreur de chargement :', errorMessage);
 	}
 
 	/**
@@ -149,27 +131,12 @@
 					<button class="btn btn-primary" onclick={createNewFile}>Créer un nouveau budget</button>
 				</div>
 
-				<div class="option-card">
-					<h3>📂 Ouvrir un fichier</h3>
-					<p>Chargez un fichier TOML existant</p>
-					<input
-						type="file"
-						accept=".toml"
-						bind:this={fileInput}
-						onchange={handleFileSelect}
-						style="display: none"
-					/>
-					<button class="btn btn-secondary" onclick={() => fileInput.click()}>
-						{loading ? 'Chargement...' : 'Ouvrir un fichier'}
-					</button>
+				<div class="option-card-full">
+					<h3>📂 Ouvrir un fichier existant</h3>
+					<p>Chargez un fichier TOML existant depuis votre ordinateur</p>
+					<FileUpload onFileLoaded={handleFileLoaded} onError={handleFileError} />
 				</div>
 			</div>
-
-			{#if error}
-				<div class="alert alert-error">
-					<strong>Erreur :</strong> {error}
-				</div>
-			{/if}
 		</div>
 
 		<div class="features">
@@ -347,7 +314,7 @@
 
 	.options {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+		grid-template-columns: 1fr;
 		gap: 2rem;
 		margin-bottom: 2rem;
 	}
@@ -358,6 +325,25 @@
 		border-radius: 8px;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 		text-align: center;
+	}
+
+	.option-card-full {
+		background: white;
+		padding: 2rem;
+		border-radius: 8px;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	}
+
+	.option-card-full h3 {
+		margin-top: 0;
+		color: #2c3e50;
+		text-align: center;
+	}
+
+	.option-card-full p {
+		color: #666;
+		text-align: center;
+		margin-bottom: 1.5rem;
 	}
 
 	.option-card h3 {

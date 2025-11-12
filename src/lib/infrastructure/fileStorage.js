@@ -253,3 +253,116 @@ export function cleanupOldBackups(maxBackups = 10) {
 		return 0;
 	}
 }
+
+/**
+ * Télécharge les données en tant que fichier TOML
+ * (Fallback pour les navigateurs sans File System Access API)
+ *
+ * @param {Object} data - Données à télécharger
+ * @param {string} fileName - Nom du fichier (par défaut: budget.toml)
+ * @returns {Object} Résultat du téléchargement
+ */
+export function downloadFile(data, fileName = 'budget.toml') {
+	try {
+		// Sérialiser les données
+		const tomlContent = serializeToTOML(data);
+
+		// Créer un blob avec le contenu TOML
+		const blob = new Blob([tomlContent], { type: 'text/plain;charset=utf-8' });
+
+		// Créer un lien de téléchargement
+		const url = URL.createObjectURL(blob);
+		const link = document.createElement('a');
+		link.href = url;
+		link.download = fileName;
+
+		// Déclencher le téléchargement
+		document.body.appendChild(link);
+		link.click();
+
+		// Nettoyer
+		document.body.removeChild(link);
+		URL.revokeObjectURL(url);
+
+		return {
+			success: true,
+			message: `✓ Fichier téléchargé : ${fileName}`
+		};
+	} catch (error) {
+		return {
+			success: false,
+			error: `❌ Erreur lors du téléchargement : ${error.message}`
+		};
+	}
+}
+
+/**
+ * Sauvegarde ou télécharge le fichier selon la disponibilité de File System Access API
+ *
+ * @param {Object} data - Données à sauvegarder
+ * @param {FileSystemFileHandle} fileHandle - Handle du fichier (optionnel)
+ * @param {string} fileName - Nom du fichier pour le téléchargement (si pas de handle)
+ * @returns {Promise<Object>} Résultat de la sauvegarde
+ */
+export async function saveOrDownload(data, fileHandle = null, fileName = 'budget.toml') {
+	// Si on a un handle de fichier, utiliser File System Access API
+	if (fileHandle && typeof fileHandle.createWritable === 'function') {
+		return await saveToFile(data, fileHandle);
+	}
+
+	// Sinon, télécharger le fichier
+	return downloadFile(data, fileName);
+}
+
+/**
+ * Demande à l'utilisateur où sauvegarder le fichier avec File System Access API
+ *
+ * @param {Object} data - Données à sauvegarder
+ * @param {string} suggestedName - Nom suggéré pour le fichier
+ * @returns {Promise<Object>} Résultat de la sauvegarde avec le handle
+ */
+export async function saveFileAs(data, suggestedName = 'budget.toml') {
+	try {
+		// Vérifier si File System Access API est disponible
+		if (!('showSaveFilePicker' in window)) {
+			// Fallback sur le téléchargement
+			return downloadFile(data, suggestedName);
+		}
+
+		// Demander à l'utilisateur où sauvegarder
+		const fileHandle = await window.showSaveFilePicker({
+			suggestedName,
+			types: [
+				{
+					description: 'Fichiers TOML',
+					accept: {
+						'text/plain': ['.toml']
+					}
+				}
+			]
+		});
+
+		// Sauvegarder avec le nouveau handle
+		const result = await saveToFile(data, fileHandle);
+
+		// Retourner le résultat avec le handle pour utilisation future
+		return {
+			...result,
+			fileHandle
+		};
+	} catch (error) {
+		// L'utilisateur a annulé ou une erreur s'est produite
+		if (error.name === 'AbortError') {
+			return {
+				success: false,
+				error: 'Sauvegarde annulée',
+				cancelled: true
+			};
+		}
+
+		return {
+			success: false,
+			error: `❌ Erreur lors de la sauvegarde : ${error.message}`
+		};
+	}
+}
