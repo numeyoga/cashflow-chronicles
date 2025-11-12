@@ -43,8 +43,9 @@ function createDataStore() {
 	 *
 	 * @param {Object} parsedData - Données parsées
 	 * @param {FileSystemFileHandle} fileHandle - Handle du fichier
+	 * @returns {Promise<boolean>} True si chargement réussi
 	 */
-	function loadData(parsedData, fileHandle = null) {
+	async function loadData(parsedData, fileHandle = null) {
 		// Valider la structure
 		const validation = validateTOMLStructure(parsedData);
 
@@ -60,9 +61,9 @@ function createDataStore() {
 			return false;
 		}
 
-		// Sauvegarder dans localStorage (remplace le fichier précédent)
+		// Sauvegarder dans IndexedDB (remplace le fichier précédent)
 		const fileName = fileHandle?.name || 'budget.toml';
-		saveToLocalStorage(parsedData, fileName);
+		await saveToLocalStorage(parsedData, fileName);
 
 		update(state => ({
 			...state,

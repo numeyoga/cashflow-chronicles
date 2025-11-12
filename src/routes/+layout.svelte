@@ -1,11 +1,45 @@
 <script>
+	import { onMount } from 'svelte';
 	import favicon from '$lib/assets/favicon.svg';
 	import '../app.css';
 	import { dataStore } from '$lib/stores/dataStore.js';
 	import SaveButton from '$lib/components/SaveButton.svelte';
 	import { page } from '$app/stores';
+	import { initDatabase } from '$lib/infrastructure/indexedDbStorage.js';
+	import { migrateFromLocalStorageToIndexedDB } from '$lib/infrastructure/migrationHelper.js';
 
 	let { children } = $props();
+
+	/**
+	 * Initialise IndexedDB et migre les données au démarrage
+	 */
+	onMount(async () => {
+		try {
+			// Initialiser IndexedDB
+			await initDatabase();
+			console.log('✓ IndexedDB initialisé');
+
+			// Migrer automatiquement depuis localStorage si nécessaire
+			const migrationResult = await migrateFromLocalStorageToIndexedDB();
+
+			if (migrationResult.success) {
+				if (migrationResult.alreadyMigrated) {
+					console.log('✓ Migration déjà effectuée');
+				} else if (migrationResult.noData) {
+					console.log('✓ Aucune donnée à migrer');
+				} else {
+					console.log('✓ Migration réussie:', {
+						fichier: migrationResult.migratedFile,
+						backups: migrationResult.backupsCount
+					});
+				}
+			} else {
+				console.warn('⚠️ Erreur de migration:', migrationResult.error);
+			}
+		} catch (error) {
+			console.error('❌ Erreur lors de l\'initialisation:', error);
+		}
+	});
 
 	/**
 	 * Gère la sauvegarde réussie
