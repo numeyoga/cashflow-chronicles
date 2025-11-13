@@ -85,6 +85,9 @@
 					<a href="/transactions" class="nav-link" class:active={$page.url.pathname === '/transactions'}>
 						💸 Transactions
 					</a>
+					<a href="/transactions/bulk" class="nav-link" class:active={$page.url.pathname === '/transactions/bulk'}>
+						⚡ Saisie en Masse
+					</a>
 				</div>
 				<div class="nav-actions">
 					<SaveButton

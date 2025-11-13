@@ -512,5 +512,68 @@ export function downloadCSV(content, filename) {
 	URL.revokeObjectURL(url);
 }
 
+/**
+ * Réorganise les transactions dans un ordre personnalisé
+ * Utile pour le drag & drop dans l'interface de saisie en masse
+ *
+ * @param {string} fromId - ID de la transaction à déplacer
+ * @param {string} toId - ID de la transaction cible
+ * @param {string} position - Position relative ('before' ou 'after')
+ * @returns {Object} Résultat { success, message }
+ */
+export function reorderTransactions(fromId, toId, position = 'after') {
+	let currentTransactions = [];
+
+	const unsubscribe = transactions.subscribe((value) => {
+		currentTransactions = [...value];
+	});
+	unsubscribe();
+
+	// Trouver les indices
+	const fromIndex = currentTransactions.findIndex((tx) => tx.id === fromId);
+	const toIndex = currentTransactions.findIndex((tx) => tx.id === toId);
+
+	if (fromIndex === -1 || toIndex === -1) {
+		return {
+			success: false,
+			message: 'Transaction non trouvée'
+		};
+	}
+
+	// Ne rien faire si on essaie de déplacer au même endroit
+	if (fromIndex === toIndex) {
+		return { success: true, message: 'Aucun changement' };
+	}
+
+	// Retirer l'élément de sa position actuelle
+	const [movedItem] = currentTransactions.splice(fromIndex, 1);
+
+	// Calculer la nouvelle position
+	let newIndex = toIndex;
+	if (fromIndex < toIndex) {
+		// Si on déplace vers le bas, l'index a diminué de 1 après le splice
+		newIndex = position === 'after' ? toIndex : toIndex - 1;
+	} else {
+		// Si on déplace vers le haut
+		newIndex = position === 'after' ? toIndex + 1 : toIndex;
+	}
+
+	// Insérer à la nouvelle position
+	currentTransactions.splice(newIndex, 0, movedItem);
+
+	// Mettre à jour le store
+	dataStore.updateData((data) => {
+		return {
+			...data,
+			transaction: currentTransactions
+		};
+	});
+
+	return {
+		success: true,
+		message: `Transaction déplacée de ${fromIndex} à ${newIndex}`
+	};
+}
+
 // Ré-exporter les fonctions utilitaires du validator
 export { calculateBalance, isBalanced, getTransactionAmount };
