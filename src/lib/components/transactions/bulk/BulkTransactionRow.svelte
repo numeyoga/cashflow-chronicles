@@ -11,7 +11,10 @@
 		expanded = false,
 		selected = false,
 		accounts = [],
-		currencies = []
+		currencies = [],
+		draggable = true,
+		dragEnabled = true, // Peut être désactivé si tri/filtre actif
+		index = 0
 	} = $props();
 
 	const dispatch = createEventDispatcher();
@@ -20,6 +23,11 @@
 	let isEditing = $state(false);
 	let draftData = $state(null);
 	let validationErrors = $state({});
+
+	// État du drag & drop
+	let isDragging = $state(false);
+	let isDragOver = $state(false);
+	let dragOverPosition = $state(null); // 'top' | 'bottom'
 
 	// Calculer le résumé de la transaction
 	let summary = $derived(calculateTransactionSummary(transaction));
@@ -96,6 +104,81 @@
 		dispatch('delete', { transaction });
 	}
 
+	// Drag & Drop handlers
+	function handleDragStart(event) {
+		if (!draggable || !dragEnabled || isEditing) {
+			event.preventDefault();
+			return;
+		}
+
+		isDragging = true;
+		event.dataTransfer.effectAllowed = 'move';
+		event.dataTransfer.setData('text/plain', transaction.id);
+
+		// Créer une image de drag personnalisée
+		const dragImage = event.currentTarget.cloneNode(true);
+		dragImage.style.opacity = '0.7';
+		document.body.appendChild(dragImage);
+		event.dataTransfer.setDragImage(dragImage, 0, 0);
+		setTimeout(() => document.body.removeChild(dragImage), 0);
+
+		dispatch('dragStart', { transaction, index });
+	}
+
+	function handleDragEnd(event) {
+		isDragging = false;
+		dispatch('dragEnd');
+	}
+
+	function handleDragOver(event) {
+		if (!draggable || !dragEnabled || isEditing) {
+			return;
+		}
+
+		event.preventDefault();
+		event.dataTransfer.dropEffect = 'move';
+
+		// Déterminer si on survole le haut ou le bas de la ligne
+		const rect = event.currentTarget.getBoundingClientRect();
+		const midpoint = rect.top + rect.height / 2;
+		dragOverPosition = event.clientY < midpoint ? 'top' : 'bottom';
+	}
+
+	function handleDragEnter(event) {
+		if (!draggable || !dragEnabled || isEditing) {
+			return;
+		}
+
+		event.preventDefault();
+		isDragOver = true;
+	}
+
+	function handleDragLeave(event) {
+		// Vérifier si on quitte vraiment l'élément (pas un enfant)
+		if (!event.currentTarget.contains(event.relatedTarget)) {
+			isDragOver = false;
+			dragOverPosition = null;
+		}
+	}
+
+	function handleDrop(event) {
+		event.preventDefault();
+		isDragOver = false;
+		dragOverPosition = null;
+
+		if (!draggable || !dragEnabled || isEditing) {
+			return;
+		}
+
+		const draggedId = event.dataTransfer.getData('text/plain');
+		dispatch('drop', {
+			draggedId,
+			targetId: transaction.id,
+			targetIndex: index,
+			position: dragOverPosition
+		});
+	}
+
 	function handlePostingChange(event) {
 		const { index, posting } = event.detail;
 		draftData.posting[index] = posting;
@@ -133,6 +216,18 @@
 		class:selected
 		class:balanced={summary.isBalanced}
 		class:unbalanced={!summary.isBalanced}
+		class:dragging={isDragging}
+		class:drag-over={isDragOver}
+		class:drag-over-top={isDragOver && dragOverPosition === 'top'}
+		class:drag-over-bottom={isDragOver && dragOverPosition === 'bottom'}
+		class:draggable={draggable && dragEnabled && !isEditing}
+		draggable={draggable && dragEnabled && !isEditing}
+		ondragstart={handleDragStart}
+		ondragend={handleDragEnd}
+		ondragover={handleDragOver}
+		ondragenter={handleDragEnter}
+		ondragleave={handleDragLeave}
+		ondrop={handleDrop}
 	>
 		<td class="col-checkbox">
 			<input type="checkbox" checked={selected} onchange={handleSelect} />
@@ -179,7 +274,23 @@
 	</tr>
 {:else}
 	<!-- Vue Étendue -->
-	<tr class="transaction-row expanded" class:selected class:editing={isEditing}>
+	<tr
+		class="transaction-row expanded"
+		class:selected
+		class:editing={isEditing}
+		class:dragging={isDragging}
+		class:drag-over={isDragOver}
+		class:drag-over-top={isDragOver && dragOverPosition === 'top'}
+		class:drag-over-bottom={isDragOver && dragOverPosition === 'bottom'}
+		class:draggable={draggable && dragEnabled && !isEditing}
+		draggable={draggable && dragEnabled && !isEditing}
+		ondragstart={handleDragStart}
+		ondragend={handleDragEnd}
+		ondragover={handleDragOver}
+		ondragenter={handleDragEnter}
+		ondragleave={handleDragLeave}
+		ondrop={handleDrop}
+	>
 		<td class="col-checkbox">
 			<input type="checkbox" checked={selected} onchange={handleSelect} />
 		</td>
@@ -340,6 +451,29 @@
 	.transaction-row.editing {
 		background-color: #fff9e6;
 		border-left: 3px solid #ff9800;
+	}
+
+	/* Drag & Drop styles */
+	.transaction-row.draggable {
+		cursor: grab;
+	}
+
+	.transaction-row.dragging {
+		opacity: 0.5;
+		background-color: #e3f2fd;
+		cursor: grabbing;
+	}
+
+	.transaction-row.drag-over {
+		background-color: #c8e6c9;
+	}
+
+	.transaction-row.drag-over-top {
+		border-top: 3px dashed #4a90e2;
+	}
+
+	.transaction-row.drag-over-bottom {
+		border-bottom: 3px dashed #4a90e2;
 	}
 
 	td {

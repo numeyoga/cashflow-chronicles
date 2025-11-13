@@ -19,6 +19,7 @@
 		addTransaction,
 		updateTransaction,
 		deleteTransaction,
+		reorderTransactions,
 		getAllTags,
 		getAllPayees
 	} from '$lib/stores/transactionStore.js';
@@ -52,6 +53,18 @@
 	// Transactions filtrées et triées
 	let filteredTransactions = $derived(filterTransactions(allTransactions, filters));
 	let sortedTransactions = $derived(sortTransactions(filteredTransactions, sortConfig));
+
+	// Détecter si des filtres ou tri sont actifs (désactive le drag & drop)
+	let hasActiveFilters = $derived(
+		filters.search !== '' ||
+			filters.dateFrom !== '' ||
+			filters.dateTo !== '' ||
+			filters.accounts.length > 0 ||
+			filters.tags.length > 0 ||
+			filters.balanceStatus !== 'all' ||
+			sortConfig.field !== 'date' ||
+			sortConfig.direction !== 'desc'
+	);
 
 	// Fonctions de notification
 	function showNotification(message, type = 'success') {
@@ -176,6 +189,37 @@
 		currentPage = 1; // Réinitialiser à la page 1
 	}
 
+	// Drag & Drop handlers
+	function handleDragStart(event) {
+		// Optionnel : Afficher un message ou changer le curseur
+	}
+
+	function handleDragEnd(event) {
+		// Optionnel : Nettoyer l'état après le drag
+	}
+
+	function handleDrop(event) {
+		const { draggedId, targetId, position } = event.detail;
+
+		if (!draggedId || !targetId) {
+			return;
+		}
+
+		// Calculer la position (avant ou après)
+		const dropPosition = position === 'top' ? 'before' : 'after';
+
+		try {
+			const result = reorderTransactions(draggedId, targetId, dropPosition);
+			if (result.success) {
+				showNotification('Ordre des transactions modifié', 'success');
+			} else {
+				showNotification(`Erreur: ${result.message}`, 'error');
+			}
+		} catch (error) {
+			showNotification(`Erreur: ${error.message}`, 'error');
+		}
+	}
+
 	// Raccourcis clavier
 	function handleKeyDown(event) {
 		// Ctrl/Cmd + N : Focus sur le formulaire d'ajout rapide
@@ -253,6 +297,7 @@
 		{selectedTransactions}
 		{currentPage}
 		{itemsPerPage}
+		{hasActiveFilters}
 		on:sort={handleSort}
 		on:selectionChange={handleSelectionChange}
 		on:expandChange={handleExpandChange}
@@ -261,6 +306,9 @@
 		on:delete={handleDelete}
 		on:pageChange={handlePageChange}
 		on:itemsPerPageChange={handleItemsPerPageChange}
+		on:dragStart={handleDragStart}
+		on:dragEnd={handleDragEnd}
+		on:drop={handleDrop}
 	/>
 
 	<!-- Aide sur les raccourcis clavier -->

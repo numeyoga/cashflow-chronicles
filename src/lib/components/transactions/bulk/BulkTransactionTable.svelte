@@ -1,10 +1,12 @@
 <script>
 	/**
 	 * BulkTransactionTable - Tableau principal avec header, lignes et pagination
+	 * Supporte le scroll virtuel pour de grandes listes
 	 */
 	import { createEventDispatcher } from 'svelte';
 	import BulkTableHeader from './BulkTableHeader.svelte';
 	import BulkTransactionRow from './BulkTransactionRow.svelte';
+	import VirtualList from './VirtualList.svelte';
 	import { paginateTransactions } from './bulkTransactionHelpers.js';
 
 	let {
@@ -15,15 +17,44 @@
 		expandedRows = new Set(),
 		selectedTransactions = new Set(),
 		currentPage = 1,
-		itemsPerPage = 50
+		itemsPerPage = 50,
+		useVirtualScroll = null, // null = auto (> 100 items), true/false = force
+		dragEnabled = true, // Peut être désactivé si tri/filtre actif
+		hasActiveFilters = false // Désactive le drag si des filtres sont actifs
 	} = $props();
 
 	const dispatch = createEventDispatcher();
 
-	// Pagination
+	// Le drag est seulement activé si pas de tri/filtre et drag autorisé
+	let canDrag = $derived(dragEnabled && !hasActiveFilters);
+
+	// Déterminer si on utilise le scroll virtuel
+	const VIRTUAL_SCROLL_THRESHOLD = 100;
+	let shouldUseVirtualScroll = $derived(
+		useVirtualScroll !== null
+			? useVirtualScroll
+			: transactions.length > VIRTUAL_SCROLL_THRESHOLD
+	);
+
+	// Pagination (utilisée uniquement si pas de virtual scroll)
 	let paginationData = $derived(paginateTransactions(transactions, currentPage, itemsPerPage));
-	let displayedTransactions = $derived(paginationData.items);
+	let displayedTransactions = $derived(
+		shouldUseVirtualScroll ? transactions : paginationData.items
+	);
 	let totalPages = $derived(paginationData.totalPages);
+
+	// Calcul de la hauteur dynamique des items pour le virtual scroll
+	const BASE_ROW_HEIGHT = 60; // Hauteur d'une ligne compacte
+	const POSTING_HEIGHT = 50; // Hauteur d'une ligne de posting
+	const ADD_POSTING_HEIGHT = 50; // Hauteur du bouton "Ajouter posting"
+
+	function getItemHeight(transaction) {
+		if (!expandedRows.has(transaction.id)) {
+			return BASE_ROW_HEIGHT;
+		}
+		// Ligne principale + lignes de posting + bouton ajouter
+		return BASE_ROW_HEIGHT + transaction.posting.length * POSTING_HEIGHT + ADD_POSTING_HEIGHT;
+	}
 
 	// État de sélection globale
 	let allSelected = $derived(
@@ -103,6 +134,19 @@
 		const newItemsPerPage = parseInt(event.target.value, 10);
 		dispatch('itemsPerPageChange', { itemsPerPage: newItemsPerPage });
 	}
+
+	// Drag & Drop handlers
+	function handleDragStart(event) {
+		dispatch('dragStart', event.detail);
+	}
+
+	function handleDragEnd(event) {
+		dispatch('dragEnd', event.detail);
+	}
+
+	function handleDrop(event) {
+		dispatch('drop', event.detail);
+	}
 </script>
 
 <div class="bulk-transaction-table-container">
@@ -112,37 +156,93 @@
 			<p class="empty-hint">Utilisez le formulaire rapide pour ajouter votre première transaction</p>
 		</div>
 	{:else}
-		<div class="table-wrapper">
-			<table class="bulk-transaction-table">
-				<BulkTableHeader
-					{sortConfig}
-					{allSelected}
-					{partialSelection}
-					on:sort={handleSort}
-					on:selectAll={handleSelectAll}
-				/>
+		{#if shouldUseVirtualScroll}
+			<!-- Mode Scroll Virtuel (pour grandes listes) -->
+			<div class="table-wrapper-virtual">
+				<table class="bulk-transaction-table">
+					<BulkTableHeader
+						{sortConfig}
+						{allSelected}
+						{partialSelection}
+						on:sort={handleSort}
+						on:selectAll={handleSelectAll}
+					/>
+				</table>
 
-				<tbody>
-					{#each displayedTransactions as transaction (transaction.id)}
-						<BulkTransactionRow
-							{transaction}
-							expanded={expandedRows.has(transaction.id)}
-							selected={selectedTransactions.has(transaction.id)}
-							{accounts}
-							{currencies}
-							on:toggle={handleToggle}
-							on:select={handleSelect}
-							on:save={handleSave}
-							on:duplicate={handleDuplicate}
-							on:delete={handleDelete}
-						/>
-					{/each}
-				</tbody>
-			</table>
-		</div>
+				<VirtualList
+					items={transactions}
+					height={600}
+					{getItemHeight}
+					overscan={3}
+				>
+					{#snippet children(transaction, index)}
+						<table class="bulk-transaction-table">
+							<tbody>
+								<BulkTransactionRow
+									{transaction}
+									{index}
+									expanded={expandedRows.has(transaction.id)}
+									selected={selectedTransactions.has(transaction.id)}
+									{accounts}
+									{currencies}
+									dragEnabled={canDrag}
+									on:toggle={handleToggle}
+									on:select={handleSelect}
+									on:save={handleSave}
+									on:duplicate={handleDuplicate}
+									on:delete={handleDelete}
+									on:dragStart={handleDragStart}
+									on:dragEnd={handleDragEnd}
+									on:drop={handleDrop}
+								/>
+							</tbody>
+						</table>
+					{/snippet}
+				</VirtualList>
 
-		<!-- Pagination -->
-		{#if totalPages > 1}
+				<div class="virtual-scroll-info">
+					{transactions.length} transaction(s) • Mode scroll virtuel activé
+				</div>
+			</div>
+		{:else}
+			<!-- Mode Pagination Classique -->
+			<div class="table-wrapper">
+				<table class="bulk-transaction-table">
+					<BulkTableHeader
+						{sortConfig}
+						{allSelected}
+						{partialSelection}
+						on:sort={handleSort}
+						on:selectAll={handleSelectAll}
+					/>
+
+					<tbody>
+						{#each displayedTransactions as transaction, index (transaction.id)}
+							<BulkTransactionRow
+								{transaction}
+								{index}
+								expanded={expandedRows.has(transaction.id)}
+								selected={selectedTransactions.has(transaction.id)}
+								{accounts}
+								{currencies}
+								dragEnabled={canDrag}
+								on:toggle={handleToggle}
+								on:select={handleSelect}
+								on:save={handleSave}
+								on:duplicate={handleDuplicate}
+								on:delete={handleDelete}
+								on:dragStart={handleDragStart}
+								on:dragEnd={handleDragEnd}
+								on:drop={handleDrop}
+							/>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+		{/if}
+
+		<!-- Pagination (uniquement en mode non-virtuel) -->
+		{#if !shouldUseVirtualScroll && totalPages > 1}
 			<div class="pagination">
 				<div class="pagination-info">
 					Affichage {paginationData.startIndex + 1} à {paginationData.endIndex} sur {transactions.length}
@@ -223,6 +323,20 @@
 		overflow-x: auto;
 		max-height: 70vh;
 		overflow-y: auto;
+	}
+
+	.table-wrapper-virtual {
+		position: relative;
+	}
+
+	.virtual-scroll-info {
+		padding: 0.75rem 1rem;
+		background-color: #e3f2fd;
+		color: #1976d2;
+		font-size: 0.85rem;
+		text-align: center;
+		border-top: 1px solid #dee2e6;
+		font-weight: 500;
 	}
 
 	.bulk-transaction-table {
